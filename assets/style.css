@@ -32,3 +32,4 @@ td{padding:6px 0;border-bottom:1px solid var(--line)}td:last-child{text-align:ri
 .empty{text-align:center;padding:28px 10px;color:var(--mut)}
 .link{background:none;border:0;color:var(--mut);text-decoration:underline;font:inherit;cursor:pointer;padding:0}
 @media(prefers-reduced-motion:no-preference){.skel{animation:p 1.2s ease-in-out infinite}@keyframes p{50%{opacity:.35}}}
+[hidden]{display:none!important}
