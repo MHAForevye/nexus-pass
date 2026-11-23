@@ -33,3 +33,16 @@ td{padding:6px 0;border-bottom:1px solid var(--line)}td:last-child{text-align:ri
 .link{background:none;border:0;color:var(--mut);text-decoration:underline;font:inherit;cursor:pointer;padding:0}
 @media(prefers-reduced-motion:no-preference){.skel{animation:p 1.2s ease-in-out infinite}@keyframes p{50%{opacity:.35}}}
 [hidden]{display:none!important}
+
+/* Kristal ile alınan abonelikler */
+.bals{display:flex;gap:6px;align-items:center}
+a.bal{color:var(--tx);text-decoration:none}#kbal:empty{display:none}#bal:empty{display:none}
+.grp{font-size:15px;color:var(--silver);margin:16px 0 4px}
+.card.dim{opacity:.6}.card.pend{border-style:dashed}
+.btn.sm{width:auto;display:inline-block;padding:6px 12px;font-size:14px;margin-top:8px}
+.code{font:600 20px/1.4 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em;margin:8px 0;word-break:break-all}
+.big{font-size:24px;font-weight:700}.lbl{display:block;margin:14px 0 6px;font-size:14px;color:var(--mut)}
+.inp{width:100%;padding:11px;border-radius:var(--r);border:1px solid var(--line);background:var(--bg);color:var(--tx);font:inherit}
+.row2{display:grid;grid-template-columns:1fr 90px;gap:8px}.pre{white-space:pre-wrap;margin-top:8px;font-size:13px}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);max-width:min(92vw,420px);padding:10px 16px;border-radius:14px;background:var(--tx);color:var(--bg);font-size:15px;text-align:center;z-index:30;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.show{opacity:1}

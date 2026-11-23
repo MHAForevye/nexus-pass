@@ -24,3 +24,13 @@ Hava, Mağaza vb. bir üyeliğin aktif olup olmadığını **sunucudan sunucuya*
     → { "active": true, "entitlements": [{ "product_id", "app", "name", "starts_at", "expires_at" }] }
 
 İade/düzeltme (`/api/internal/refund`, yönetici ters kaydı) üyeliği hemen kapatır. Katalog: yönetici API'si `POST /api/admin/pass/products` (süper yönetici).
+
+## Kristal ile alınan abonelikler (Mağaza'dan taşındı)
+Forevye Mağaza'nın abonelik tarafı Nexus Pass'in kendi ekranlarına işlendi; ayrı bir Mağaza sitesi yok:
+- **Keşfet:** Nexus Pass paketlerinin (FN) altında *Kristal ile* bölümü: Mantar Pano (Pro / Sınırsız), Zamanlayıcı (Plus / Premium, 3 ve 7 gün) ve Astrophoto Cam aktivasyon paketleri. Her paketin kendi sayfası ve onaylı satın alması var (`#k/...`).
+- **Üyeliklerim:** satın alınan Mantar Pano ve Zamanlayıcı kodları (durum, kopyala). **Geçmiş:** Astrophoto Cam talepleri ve bekleyen mail düğmeleri (maili tekrar aç, Gmail'de aç, metni kopyala, gizle).
+- **Hesap** (`#acct`, ana sayfadaki kristal kartı ya da üstteki ◆ rozeti): kristal bakiyesi, Site ID, hesap yedeği, önceki hesabı geri yükleme. Hesap taşıma bağlantısı `#hesap=ID.ANAHTAR` hâlâ çalışır; hava uygulamasının ve eski Mağaza'nın yedek metni kabul edilir.
+- **Yönetici:** Hesap sayfasında, Astrophoto Cam ID alanına gizli kelime yazılınca açılır (yalnızca Mantar/Zamanlayıcı kodu üretme ve gelen mail doğrulama; yetki sunucudaki `ADMIN_TOKEN`'da).
+- **Gelmeyenler:** hediye kartı, seri ateşi ve alev koleksiyonu, hediye kodu, kristal ekleme (yönetici). Günlük ödül ve seri sunucuda hesaplanır; her açılışta verilir.
+
+Kristal sunucusu ayrıdır (Cloudflare Worker + D1, hava reposundaki `worker/`); Nexus girişi gerektirmez, kendi hesabı vardır (Site ID + anahtar, `localStorage`). **Kurulum:** `assets/config.js` → `KRISTAL_API_BASE`; hava reposunda `wrangler.toml` → `MARKET_ORIGIN = "https://mhaforevye.github.io"` (yalnızca alan adı) ve `npx wrangler deploy`, yoksa bakiye gelmez (CORS). Hava'daki `MARKET_URL` ve Mantar Pano'daki `STORE_URL` bu sitenin adresine (`…/nexus-pass/`) çevrilmeli. Testler: `npm test`.
