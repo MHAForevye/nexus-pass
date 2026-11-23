@@ -25,11 +25,13 @@
   function codeRow(p, label, kind) {
     var st = K.passState(p);
     return '<div class="card"><div class="row"><h3>' + esc(label) + '</h3><span class="badge ' + (st.cls === 'on' ? 'ok' : st.cls === 'old' ? 'off' : 'warn') + '">' + (st.cls === 'on' ? '✓ Aktif' : st.cls === 'old' ? '◷ Doldu' : '● Hazır') + '</span></div>' +
-      '<div class="code">' + esc(K.fmtCode(p.c)) + '</div><div class="mut">' + esc(st.text) + '</div><button class="btn sm" data-act="copy" data-v="' + esc(K.fmtCode(p.c)) + '">Kodu kopyala</button></div>';
+      '<div class="code">' + esc(K.fmtCode(p.c)) + '</div><div class="mut">' + esc(st.text) + '</div><button class="btn sm" data-act="copy" data-v="' + esc(K.fmtCode(p.c)) + '">Kodu kopyala</button>' + openLink(kind, p.c, 'btn sm') + '</div>';
   }
+  /* Mantar Pano: kod bağlantıyla taşınır, uygulama kendiliğinden etkinleştirir (yapıştırmaya gerek yok) */
+  function openLink(kind, code, cls) { var u = kind === 'mantar' ? K.mantarUrl(code) : ''; return u ? ' <a class="' + cls + '" href="' + esc(u) + '" target="_blank" rel="noopener">Mantar Pano’da aç</a>' : ''; }
   function codes() {
     var S = K.S(), h = '';
-    if (S.passes.length) h += '<h2>Mantar Pano kodlarım</h2><p class="mut">Kodu Mantar Pano’da Premium kodu alanına yapıştır. Süre, kodu ilk kullandığın anda başlar.</p>' + S.passes.slice().reverse().map(function (p) { var t = K.mTier(p.tier); return codeRow(p, (t ? t.name : 'Mantar Pano ' + p.tier) + ' · ' + (p.days || K.mantarCfg().days) + ' gün'); }).join('');
+    if (S.passes.length) h += '<h2>Mantar Pano kodlarım</h2><p class="mut">Kodu Mantar Pano’da Premium kodu alanına yapıştır. Süre, kodu ilk kullandığın anda başlar.</p>' + S.passes.slice().reverse().map(function (p) { var t = K.mTier(p.tier); return codeRow(p, (t ? t.name : 'Mantar Pano ' + p.tier) + ' · ' + (p.days || K.mantarCfg().days) + ' gün', 'mantar'); }).join('');
     if (S.zpasses.length) h += '<h2>Zamanlayıcı kodlarım</h2><p class="mut">Kodu Zamanlayıcı uygulamasındaki kod alanına yapıştır. Süre, kodu ilk kullandığın anda başlar; kod en fazla 2 cihazda çalışır.</p>' + S.zpasses.slice().reverse().map(function (p) { var t = K.zTier(p.tier); return codeRow(p, (t ? t.name : 'Zamanlayıcı ' + p.tier) + ' · ' + p.days + ' gün'); }).join('');
     return h;
   }
@@ -73,15 +75,14 @@
   function tbl(cost, bal) { return '<table><tr><td>Fiyat</td><td>' + kc(cost) + '</td></tr><tr><td>Bakiyen</td><td>' + kc(bal) + '</td></tr><tr><td>İşlem sonrası</td><td>' + (bal >= cost ? kc(bal - cost) : '—') + '</td></tr></table>'; }
   function buyBtn(kind, id, cost) { return '<button class="btn primary" data-act="buy" data-kind="' + esc(kind) + '" data-id="' + esc(id) + '"' + (K.S().bal < cost ? ' disabled' : '') + '>Kristal ile al</button>'; }
 
-  function codeResult(title, p, name, where) {
+  function codeResult(kind, p, name, where) {
     var code = K.fmtCode(p.c);
-    return '<h1 class="ok">✓ Kodun hazır</h1><div class="card"><b>' + esc(name) + '</b><div class="code">' + esc(code) + '</div><p class="mut">' + esc(where) + '\'ne yapıştır; ' + esc(p.days) + ' günlük süre, kodu ilk kullandığın anda başlar. Kod “Üyeliklerim” sayfasında da durur.</p>' +
-      '<button class="btn primary" data-act="copy" data-v="' + esc(code) + '">Kodu kopyala</button></div><a class="btn" href="#mine">Üyeliklerime git</a>';
+    return '<h1 class="ok">✓ Kodun hazır</h1><div class="card"><b>' + esc(name) + '</b><div class="code">' + esc(code) + '</div><p class="mut">' + (kind === 'mantar' ? 'Aşağıdaki düğme Mantar Pano’yu açar ve kodu kendiliğinden girer. ' : '') + 'Elle girmek istersen kodu şuraya yapıştır: ' + esc(where) + '. ' + esc(p.days) + ' günlük süre, kodu ilk kullandığın anda başlar. Kod “Üyeliklerim” sayfasında da durur.</p>' + (openLink(kind, p.c, 'btn primary') ? openLink(kind, p.c, 'btn primary').trim() + '<button class="btn" data-act="copy" data-v="' + esc(code) + '">Kodu kopyala</button>' : '<button class="btn primary" data-act="copy" data-v="' + esc(code) + '">Kodu kopyala</button>') + '</div><a class="btn" href="#mine">Üyeliklerime git</a>';
   }
   function buy(kind, id, btn) {
     var S = K.S(), label, run, show;
-    if (kind === 'mantar') { var t = K.mTier(id); if (!t) return; label = t.name + ' (' + K.mantarCfg().days + ' gün) için ' + t.cost + ' kristal'; run = function () { return K.buyMantar(t.id); }; show = function (d) { return d.pass ? codeResult('', d.pass, t.name, 'Mantar Pano’da Premium kodu alanı') : ''; }; }
-    else if (kind === 'zaman') { var m = /^(plus|premium)-(\d+)$/.exec(id), p = m && K.zPlanOf(m[1], +m[2]); if (!p) return; var tr = K.zTier(p.tier); label = (tr ? tr.name : 'Zamanlayıcı') + ' ' + p.days + ' gün için ' + p.cost + ' kristal'; run = function () { return K.buyZaman(p.tier, p.days); }; show = function (d) { return d.zpass ? codeResult('', d.zpass, (tr ? tr.name : 'Zamanlayıcı'), 'Zamanlayıcı uygulamasındaki kod alanı') : ''; }; }
+    if (kind === 'mantar') { var t = K.mTier(id); if (!t) return; label = t.name + ' (' + K.mantarCfg().days + ' gün) için ' + t.cost + ' kristal'; run = function () { return K.buyMantar(t.id); }; show = function (d) { return d.pass ? codeResult('mantar', d.pass, t.name, 'Mantar Pano’da Premium kodu alanı') : ''; }; }
+    else if (kind === 'zaman') { var m = /^(plus|premium)-(\d+)$/.exec(id), p = m && K.zPlanOf(m[1], +m[2]); if (!p) return; var tr = K.zTier(p.tier); label = (tr ? tr.name : 'Zamanlayıcı') + ' ' + p.days + ' gün için ' + p.cost + ' kristal'; run = function () { return K.buyZaman(p.tier, p.days); }; show = function (d) { return d.zpass ? codeResult('zaman', d.zpass, (tr ? tr.name : 'Zamanlayıcı'), 'Zamanlayıcı uygulamasındaki kod alanı') : ''; }; }
     else { var pk = K.cfg().packs[+id]; if (!pk) return; var cam = ($('#camId') ? $('#camId').value : '').trim(); camDraft = cam;
       if (cam.length < 3) { if ($('#camId')) $('#camId').focus(); return K.toast('Önce ' + K.app + ' ID’ni yaz.'); }
       label = pk.name + ' için ' + pk.cost + ' kristal'; run = function () { return K.buyPack(+id, cam); };

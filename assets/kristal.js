@@ -219,6 +219,7 @@
     pendingReq: pendingReq, mailAddr: mailAddr, openMail: openMail, openGmail: openGmail, mailCopy: mailCopy,
     passState: passState, fmtCode: fmtCode, normCode: normCode, copy: copy, toast: toast,
     oldCreds: oldCreds, restoreOld: restoreOld, backupCopy: backupCopy, backupLoad: backupLoad,
+    mantarUrl: function (code) { var u = String(P.MANTAR_URL || ''); return /^https:\/\//.test(u) && code ? u.replace(/#.*$/, '') + '#kod=' + encodeURIComponent(fmtCode(code)) : ''; },
     isOwnerWord: isOwnerWord, admin: admin, app: CFG.app, sync: sync
   };
 })();
