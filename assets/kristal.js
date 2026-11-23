@@ -13,13 +13,14 @@
     owner: 'llbha0uxr6'                                 // gizli kelimenin özeti: sadece yönetici bölümünü AÇAR, yetki vermez (yetki sunucuda ADMIN_TOKEN)
   };
   var SCFG = { daily: 30, streak: { every: 7, bonus: 60 }, packs: [{ name: '3 Günlük Paket', short: '3 günlük', cost: 500 }, { name: '7 Günlük Paket (Haftalık)', short: '7 günlük', cost: 1000 }], mantar: { days: 7, tiers: [{ id: 'pro', name: 'Mantar Pano Pro', short: 'Pro', cost: 120 }, { id: 'unl', name: 'Mantar Pano Sınırsız', short: 'Sınırsız', cost: 250 }] },
-    zaman: { tiers: [{ id: 'plus', name: 'Zamanlayıcı Plus', short: 'Plus' }, { id: 'premium', name: 'Zamanlayıcı Premium', short: 'Premium' }], plans: [{ tier: 'plus', days: 3, cost: 100 }, { tier: 'plus', days: 7, cost: 200 }, { tier: 'premium', days: 3, cost: 250 }, { tier: 'premium', days: 7, cost: 500 }], save7: { plus: 14, premium: 14 } } };
+    zaman: { tiers: [{ id: 'plus', name: 'Zamanlayıcı Plus', short: 'Plus' }, { id: 'premium', name: 'Zamanlayıcı Premium', short: 'Premium' }], plans: [{ tier: 'plus', days: 3, cost: 100 }, { tier: 'plus', days: 7, cost: 200 }, { tier: 'premium', days: 3, cost: 250 }, { tier: 'premium', days: 7, cost: 500 }], save7: { plus: 14, premium: 14 } },
+    retro: { tiers: [{ id: 'premium', name: 'Retro Camera Premium', short: 'Premium' }], plans: [], save7: {} } };
   var S = blank(), creds = null, todayS = '', offline = false, busy = false, lastSync = 0, reinit = false, listeners = [], ready = null;
 
-  function blank() { return { id: '--------', bal: 0, earned: 0, gift: 0, spent: 0, days: 0, first: '', last: '', cam: '', pending: '', reqs: [], codes: [], passes: [], zpasses: [], streak: { n: 0, best: 0, shield: 0, paid: 0, last: '' } }; }
+  function blank() { return { id: '--------', bal: 0, earned: 0, gift: 0, spent: 0, days: 0, first: '', last: '', cam: '', pending: '', reqs: [], codes: [], passes: [], zpasses: [], rpasses: [], streak: { n: 0, best: 0, shield: 0, paid: 0, last: '' } }; }
   function norm(s) {
     var b = blank(); for (var k in b) if (s && s[k] !== undefined && s[k] !== null) b[k] = s[k];
-    ['reqs', 'codes', 'passes', 'zpasses'].forEach(function (k) { if (!Array.isArray(b[k])) b[k] = []; });
+    ['reqs', 'codes', 'passes', 'zpasses', 'rpasses'].forEach(function (k) { if (!Array.isArray(b[k])) b[k] = []; });
     if (!b.streak || typeof b.streak !== 'object') b.streak = blank().streak;
     return b;
   }
@@ -145,6 +146,13 @@
   }
   function mantarCfg() { return (SCFG && SCFG.mantar && SCFG.mantar.tiers) ? SCFG.mantar : { days: 7, tiers: [] }; }
   function zamanCfg() { return (SCFG && SCFG.zaman && SCFG.zaman.plans) ? SCFG.zaman : { tiers: [], plans: [], save7: {} }; }
+  function retroCfg() { return (SCFG && SCFG.retro && SCFG.retro.plans) ? SCFG.retro : { tiers: [], plans: [], save7: {} }; }
+  function rTier(id) { return retroCfg().tiers.filter(function (x) { return x.id === id; })[0]; }
+  function rPlanOf(tier, days) { return retroCfg().plans.filter(function (x) { return x.tier === tier && x.days === days; })[0]; }
+  function rSave(tier) {
+    var v = retroCfg().save7 && retroCfg().save7[tier]; if (typeof v === 'number') return v;
+    var a = rPlanOf(tier, 3), b = rPlanOf(tier, 7); return a && b ? Math.round((1 - b.cost / (a.cost * 7 / 3)) * 100) : 0;
+  }
   function zTier(id) { return zamanCfg().tiers.filter(function (x) { return x.id === id; })[0]; }
   function mTier(id) { return mantarCfg().tiers.filter(function (x) { return x.id === id; })[0]; }
   function zPlanOf(tier, days) { return zamanCfg().plans.filter(function (x) { return x.tier === tier && x.days === days; })[0]; }
@@ -162,6 +170,7 @@
   var buyPack = function (i, cam) { return spend('/buy', { pack: i, cam: String(cam || '').slice(0, 60) }); };
   var buyMantar = function (tier) { return spend('/pass/buy', { tier: tier }); };
   var buyZaman = function (tier, days) { return spend('/zpass/buy', { tier: tier, days: days }); };
+  var buyRetro = function (tier, days) { return spend('/rpass/buy', { tier: tier, days: days }); };
   var mailDone = function () { return api('/mail-done').then(apply); };
 
   /* ===== Astrophoto Cam: mail talebi ===== */
@@ -198,6 +207,8 @@
     passList: function (k) { return api('/admin/passes', {}, k); },
     zMake: function (k, tier, days) { return api('/admin/zpass', { tier: tier, days: days }, k); },
     zList: function (k) { return api('/admin/zpasses', {}, k); },
+    rMake: function (k, tier, days) { return api('/admin/rpass', { tier: tier, days: days }, k); },
+    rList: function (k) { return api('/admin/rpasses', {}, k); },
     verify: function (k, text) { return api('/admin/verify', { text: text }, k); },
     done: function (k, no) { return api('/admin/done', { no: no }, k); }
   };
@@ -214,12 +225,12 @@
   window.KR = {
     start: start, onChange: function (f) { listeners.push(f); }, ready: function () { return ready || Promise.resolve(); },
     S: function () { return S; }, cfg: function () { return SCFG; }, creds: function () { return creds; }, offline: function () { return offline; }, today: function () { return todayS; },
-    mantarCfg: mantarCfg, zamanCfg: zamanCfg, mTier: mTier, zTier: zTier, zPlanOf: zPlanOf, zSave: zSave, daysToAfford: daysToAfford,
-    buyPack: buyPack, buyMantar: buyMantar, buyZaman: buyZaman, mailDone: mailDone,
+    mantarCfg: mantarCfg, zamanCfg: zamanCfg, retroCfg: retroCfg, mTier: mTier, zTier: zTier, rTier: rTier, zPlanOf: zPlanOf, rPlanOf: rPlanOf, zSave: zSave, rSave: rSave, daysToAfford: daysToAfford,
+    buyPack: buyPack, buyMantar: buyMantar, buyZaman: buyZaman, buyRetro: buyRetro, mailDone: mailDone,
     pendingReq: pendingReq, mailAddr: mailAddr, openMail: openMail, openGmail: openGmail, mailCopy: mailCopy,
     passState: passState, fmtCode: fmtCode, normCode: normCode, copy: copy, toast: toast,
     oldCreds: oldCreds, restoreOld: restoreOld, backupCopy: backupCopy, backupLoad: backupLoad,
-    mantarUrl: function (code) { var u = String(P.MANTAR_URL || ''); return /^https:\/\//.test(u) && code ? u.replace(/#.*$/, '') + '#kod=' + encodeURIComponent(fmtCode(code)) : ''; },
+    appUrl: function (kind, code) { var u = String(({ mantar: P.MANTAR_URL, zaman: P.ZAMAN_URL, retro: P.RETRO_URL })[kind] || ''); return /^https:\/\//.test(u) && code ? u.replace(/#.*$/, '') + '#kod=' + encodeURIComponent(fmtCode(code)) : ''; },
     isOwnerWord: isOwnerWord, admin: admin, app: CFG.app, sync: sync
   };
 })();

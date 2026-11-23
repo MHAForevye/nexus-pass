@@ -1,5 +1,5 @@
 'use strict';
-/* Kristal ile alınan abonelikler (Mantar Pano, Zamanlayıcı) ve Astrophoto Cam paketleri: Nexus Pass ekranlarına eklenen parçalar.
+/* Kristal ile alınan abonelikler (Mantar Pano, Zamanlayıcı, Retro Camera) ve Astrophoto Cam paketleri: Nexus Pass ekranlarına eklenen parçalar.
    Her parça HTML metni döndürür (sunucudan gelen her değer esc ile kaçırılır); tıklamalar tek bir olay dinleyicisiyle (data-act) işlenir. */
 (function () {
   var K = window.KR, $ = function (s) { return document.querySelector(s); };
@@ -19,6 +19,11 @@
       var t = K.zTier(p.tier), pct = p.days === 7 ? K.zSave(p.tier) : 0;
       return item('k/zaman/' + p.tier + '-' + p.days, '⏱', (t ? t.name : p.tier) + ' · ' + p.days + ' gün', pct > 0 ? '%' + pct + ' tasarruf · kod ile' : 'kod ile', kc(p.cost), S.bal < p.cost);
     }).join('') || '<div class="empty">Paket yok.</div>');
+    var rc = K.retroCfg();
+    h += '<h3 class="grp">Retro Camera</h3>' + (rc.plans.map(function (p) {
+      var t = K.rTier(p.tier), pct = p.days === 7 ? K.rSave(p.tier) : 0;
+      return item('k/retro/' + p.tier + '-' + p.days, '📷', (t ? t.name : p.tier) + ' · ' + p.days + ' gün', pct > 0 ? '%' + pct + ' tasarruf · kod ile' : 'kod ile', kc(p.cost), S.bal < p.cost);
+    }).join('') || '<div class="empty">Paket yok.</div>');
     h += '<h3 class="grp">' + esc(K.app) + '</h3>' + K.cfg().packs.map(function (pk, i) { return item('k/pack/' + i, '📷', pk.name, 'aktivasyon hakkı · mail ile teslim', kc(pk.cost), S.bal < pk.cost); }).join('');
     return h;
   }
@@ -27,12 +32,14 @@
     return '<div class="card"><div class="row"><h3>' + esc(label) + '</h3><span class="badge ' + (st.cls === 'on' ? 'ok' : st.cls === 'old' ? 'off' : 'warn') + '">' + (st.cls === 'on' ? '✓ Aktif' : st.cls === 'old' ? '◷ Doldu' : '● Hazır') + '</span></div>' +
       '<div class="code">' + esc(K.fmtCode(p.c)) + '</div><div class="mut">' + esc(st.text) + '</div><button class="btn sm" data-act="copy" data-v="' + esc(K.fmtCode(p.c)) + '">Kodu kopyala</button>' + openLink(kind, p.c, 'btn sm') + '</div>';
   }
-  /* Mantar Pano: kod bağlantıyla taşınır, uygulama kendiliğinden etkinleştirir (yapıştırmaya gerek yok) */
-  function openLink(kind, code, cls) { var u = kind === 'mantar' ? K.mantarUrl(code) : ''; return u ? ' <a class="' + cls + '" href="' + esc(u) + '" target="_blank" rel="noopener">Mantar Pano’da aç</a>' : ''; }
+  /* Mantar Pano, Zamanlayıcı, Retro Camera: kod bağlantıyla taşınır, uygulama kendiliğinden etkinleştirir (yapıştırmaya gerek yok) */
+  var APPNAME = { mantar: 'Mantar Pano', zaman: 'Zamanlayıcı', retro: 'Retro Camera' };
+  function openLink(kind, code, cls) { var u = K.appUrl(kind, code); return u ? ' <a class="' + cls + '" href="' + esc(u) + '" target="_blank" rel="noopener">' + esc(APPNAME[kind]) + '’da aç</a>' : ''; }
   function codes() {
     var S = K.S(), h = '';
     if (S.passes.length) h += '<h2>Mantar Pano kodlarım</h2><p class="mut">Kodu Mantar Pano’da Premium kodu alanına yapıştır. Süre, kodu ilk kullandığın anda başlar.</p>' + S.passes.slice().reverse().map(function (p) { var t = K.mTier(p.tier); return codeRow(p, (t ? t.name : 'Mantar Pano ' + p.tier) + ' · ' + (p.days || K.mantarCfg().days) + ' gün', 'mantar'); }).join('');
-    if (S.zpasses.length) h += '<h2>Zamanlayıcı kodlarım</h2><p class="mut">Kodu Zamanlayıcı uygulamasındaki kod alanına yapıştır. Süre, kodu ilk kullandığın anda başlar; kod en fazla 2 cihazda çalışır.</p>' + S.zpasses.slice().reverse().map(function (p) { var t = K.zTier(p.tier); return codeRow(p, (t ? t.name : 'Zamanlayıcı ' + p.tier) + ' · ' + p.days + ' gün'); }).join('');
+    if (S.zpasses.length) h += '<h2>Zamanlayıcı kodlarım</h2><p class="mut">Kodu Zamanlayıcı uygulamasındaki kod alanına yapıştır. Süre, kodu ilk kullandığın anda başlar; kod en fazla 2 cihazda çalışır.</p>' + S.zpasses.slice().reverse().map(function (p) { var t = K.zTier(p.tier); return codeRow(p, (t ? t.name : 'Zamanlayıcı ' + p.tier) + ' · ' + p.days + ' gün', 'zaman'); }).join('');
+    if (S.rpasses.length) h += '<h2>Retro Camera kodlarım</h2><p class="mut">Kodu Retro Camera’nın Premium sayfasındaki kod alanına yapıştır ya da “Retro Camera’da aç” düğmesini kullan. Süre, kodu ilk kullandığın anda başlar; kod en fazla 2 cihazda çalışır.</p>' + S.rpasses.slice().reverse().map(function (p) { var t = K.rTier(p.tier); return codeRow(p, (t ? t.name : 'Retro Camera') + ' · ' + p.days + ' gün', 'retro'); }).join('');
     return h;
   }
   function reqs() {
@@ -65,6 +72,11 @@
       var tr = K.zTier(p.tier), d3 = K.zPlanOf(p.tier, 3), pct = K.zSave(p.tier), ex = p.days === 7 && d3 && pct > 0 ? ' 3 günlük paketin günlük fiyatıyla 7 gün ' + Math.round(d3.cost * 7 / 3) + ' kristal tutardı; bu pakette günlük maliyet %' + pct + ' daha düşük.' : '';
       return back + '<h1>' + esc(tr ? tr.name : 'Zamanlayıcı') + ' · ' + p.days + ' gün</h1><div class="card"><p>' + p.days + ' günlük ' + esc(tr ? tr.short : '') + ' erişimi. Alınca sana bir kod verilir; kodu Zamanlayıcı uygulamasında gir, süre ilk kullandığın anda başlar. Kod en fazla 2 cihazda kullanılır.' + esc(ex) + '</p>' + tbl(p.cost, S.bal) + need(p.cost) + '</div>' + buyBtn('zaman', id, p.cost, '');
     }
+    if (kind === 'retro') {
+      var rm = /^(premium)-(\d+)$/.exec(id || ''), rp = rm && K.rPlanOf(rm[1], +rm[2]); if (!rp) return back + '<div class="empty">Paket bulunamadı.</div>';
+      var rt = K.rTier(rp.tier), r3 = K.rPlanOf(rp.tier, 3), rpct = K.rSave(rp.tier), rex = rp.days === 7 && r3 && rpct > 0 ? ' 3 günlük paketin günlük fiyatıyla 7 gün ' + Math.round(r3.cost * 7 / 3) + ' kristal tutardı; bu pakette günlük maliyet %' + rpct + ' daha düşük.' : '';
+      return back + '<h1>' + esc(rt ? rt.name : 'Retro Camera') + ' · ' + rp.days + ' gün</h1><div class="card"><p>' + rp.days + ' günlük Premium erişimi: 2 GB arşiv, sınırsız albüm ve albüm kapağı, film şeridi / siyah pasparto / tarih damgası çerçeveleri, PDF fotokitap. Alınca sana bir kod verilir; kodu Retro Camera’da gir, süre ilk kullandığın anda başlar. Kod en fazla 2 cihazda kullanılır. Süre bitince fotoğrafların silinmez, yalnızca Premium özellikler kapanır.' + esc(rex) + '</p>' + tbl(rp.cost, S.bal) + need(rp.cost) + '</div>' + buyBtn('retro', id, rp.cost, '');
+    }
     if (kind === 'pack') {
       var pk = K.cfg().packs[+id]; if (!pk) return back + '<div class="empty">Paket bulunamadı.</div>';
       return back + '<h1>' + esc(pk.name) + '</h1><div class="card"><p>' + esc(K.app) + ' için ' + esc(pk.short) + ' aktivasyon hakkı. Alınca talebin sunucuda kayıt altına alınır ve mail taslağı açılır; kod, doğrulamadan sonra mail ile gönderilir.</p>' + tbl(pk.cost, S.bal) +
@@ -77,11 +89,12 @@
 
   function codeResult(kind, p, name, where) {
     var code = K.fmtCode(p.c);
-    return '<h1 class="ok">✓ Kodun hazır</h1><div class="card"><b>' + esc(name) + '</b><div class="code">' + esc(code) + '</div><p class="mut">' + (kind === 'mantar' ? 'Aşağıdaki düğme Mantar Pano’yu açar ve kodu kendiliğinden girer. ' : '') + 'Elle girmek istersen kodu şuraya yapıştır: ' + esc(where) + '. ' + esc(p.days) + ' günlük süre, kodu ilk kullandığın anda başlar. Kod “Üyeliklerim” sayfasında da durur.</p>' + (openLink(kind, p.c, 'btn primary') ? openLink(kind, p.c, 'btn primary').trim() + '<button class="btn" data-act="copy" data-v="' + esc(code) + '">Kodu kopyala</button>' : '<button class="btn primary" data-act="copy" data-v="' + esc(code) + '">Kodu kopyala</button>') + '</div><a class="btn" href="#mine">Üyeliklerime git</a>';
+    return '<h1 class="ok">✓ Kodun hazır</h1><div class="card"><b>' + esc(name) + '</b><div class="code">' + esc(code) + '</div><p class="mut">' + (openLink(kind, p.c, '') ? 'Aşağıdaki düğme uygulamayı açar ve kodu kendiliğinden girer. ' : '') + 'Elle girmek istersen kodu şuraya yapıştır: ' + esc(where) + '. ' + esc(p.days) + ' günlük süre, kodu ilk kullandığın anda başlar. Kod “Üyeliklerim” sayfasında da durur.</p>' + (openLink(kind, p.c, 'btn primary') ? openLink(kind, p.c, 'btn primary').trim() + '<button class="btn" data-act="copy" data-v="' + esc(code) + '">Kodu kopyala</button>' : '<button class="btn primary" data-act="copy" data-v="' + esc(code) + '">Kodu kopyala</button>') + '</div><a class="btn" href="#mine">Üyeliklerime git</a>';
   }
   function buy(kind, id, btn) {
     var S = K.S(), label, run, show;
     if (kind === 'mantar') { var t = K.mTier(id); if (!t) return; label = t.name + ' (' + K.mantarCfg().days + ' gün) için ' + t.cost + ' kristal'; run = function () { return K.buyMantar(t.id); }; show = function (d) { return d.pass ? codeResult('mantar', d.pass, t.name, 'Mantar Pano’da Premium kodu alanı') : ''; }; }
+    else if (kind === 'retro') { var rm = /^(premium)-(\d+)$/.exec(id), rp = rm && K.rPlanOf(rm[1], +rm[2]); if (!rp) return; var rt = K.rTier(rp.tier); label = (rt ? rt.name : 'Retro Camera') + ' ' + rp.days + ' gün için ' + rp.cost + ' kristal'; run = function () { return K.buyRetro(rp.tier, rp.days); }; show = function (d) { return d.rpass ? codeResult('retro', d.rpass, (rt ? rt.name : 'Retro Camera'), 'Retro Camera’nın Premium sayfasındaki kod alanı') : ''; }; }
     else if (kind === 'zaman') { var m = /^(plus|premium)-(\d+)$/.exec(id), p = m && K.zPlanOf(m[1], +m[2]); if (!p) return; var tr = K.zTier(p.tier); label = (tr ? tr.name : 'Zamanlayıcı') + ' ' + p.days + ' gün için ' + p.cost + ' kristal'; run = function () { return K.buyZaman(p.tier, p.days); }; show = function (d) { return d.zpass ? codeResult('zaman', d.zpass, (tr ? tr.name : 'Zamanlayıcı'), 'Zamanlayıcı uygulamasındaki kod alanı') : ''; }; }
     else { var pk = K.cfg().packs[+id]; if (!pk) return; var cam = ($('#camId') ? $('#camId').value : '').trim(); camDraft = cam;
       if (cam.length < 3) { if ($('#camId')) $('#camId').focus(); return K.toast('Önce ' + K.app + ' ID’ni yaz.'); }
@@ -108,6 +121,8 @@
       '<button class="btn" data-act="mmake">Mantar kodu üret</button><button class="btn" data-act="mlist">Üretilen kodları göster</button><div class="mut pre" id="mMade"></div>' +
       '<div class="lbl">Zamanlayıcı kodu (ücretsiz)</div><div class="row2"><select class="inp" id="zTier"><option value="plus">Plus</option><option value="premium">Premium</option></select><input class="inp" id="zDays" inputmode="numeric" value="7" aria-label="Gün"></div><div class="code" id="zOut"></div>' +
       '<button class="btn" data-act="zmake">Zamanlayıcı kodu üret</button><button class="btn" data-act="zlist">Üretilen kodları göster</button><div class="mut pre" id="zMade"></div>' +
+      '<div class="lbl">Retro Camera kodu (ücretsiz)</div><div class="row2"><select class="inp" id="rTier"><option value="premium">Premium</option></select><input class="inp" id="rDays" inputmode="numeric" value="7" aria-label="Gün"></div><div class="code" id="rOut"></div>' +
+      '<button class="btn" data-act="rmake">Retro Camera kodu üret</button><button class="btn" data-act="rlist">Üretilen kodları göster</button><div class="mut pre" id="rMade"></div>' +
       '<div class="lbl">' + esc(K.app) + ' · gelen maili doğrula</div><textarea class="inp" id="verIn" rows="5" placeholder="Gelen mailin tamamını buraya yapıştır" autocomplete="off" spellcheck="false"></textarea>' +
       '<button class="btn" data-act="verify">Maili doğrula</button><button class="btn" data-act="verdone">Talebi tamamlandı say</button><div class="mut pre" id="verOut"></div><button class="btn" data-act="admclose">Bu bölümü kapat</button></div>';
   }
@@ -119,12 +134,12 @@
   }
   function make(kind) {
     var k = admKey(); if (!k) return;
-    var m = kind === 'm', call = m ? K.admin.passMake(k, $('#mTier').value, $('#mDays').value) : K.admin.zMake(k, $('#zTier').value, $('#zDays').value);
-    call.then(function (d) { $(m ? '#mOut' : '#zOut').textContent = K.fmtCode(d.code); K.copy(K.fmtCode(d.code), (m ? 'Mantar' : 'Zamanlayıcı') + ' kodu üretildi ve kopyalandı: ' + K.fmtCode(d.code) + ' (' + d.name + ', ' + d.days + ' gün)'); list(kind, true); }, function (e) { K.toast(e.message); });
+    var call = kind === 'm' ? K.admin.passMake(k, $('#mTier').value, $('#mDays').value) : kind === 'r' ? K.admin.rMake(k, $('#rTier').value, $('#rDays').value) : K.admin.zMake(k, $('#zTier').value, $('#zDays').value), nm = kind === 'm' ? 'Mantar' : kind === 'r' ? 'Retro Camera' : 'Zamanlayıcı';
+    call.then(function (d) { $('#' + kind + 'Out').textContent = K.fmtCode(d.code); K.copy(K.fmtCode(d.code), nm + ' kodu üretildi ve kopyalandı: ' + K.fmtCode(d.code) + ' (' + d.name + ', ' + d.days + ' gün)'); list(kind, true); }, function (e) { K.toast(e.message); });
   }
   function list(kind, quiet) {
     var k = quiet ? ($('#admKey') ? $('#admKey').value.trim() : '') : admKey(); if (!k) return;
-    var m = kind === 'm'; (m ? K.admin.passList(k) : K.admin.zList(k)).then(function (d) { var b = $(m ? '#mMade' : '#zMade'); if (b) listInto(b, d); }, function (e) { if (!quiet) K.toast(e.message); });
+    (kind === 'm' ? K.admin.passList(k) : kind === 'r' ? K.admin.rList(k) : K.admin.zList(k)).then(function (d) { var b = $('#' + kind + 'Made'); if (b) listInto(b, d); }, function (e) { if (!quiet) K.toast(e.message); });
   }
 
   /* ===== Tıklamalar ===== */
@@ -141,8 +156,8 @@
     else if (a === 'backload') K.backupLoad($('#backIn').value).then(function (ok) { if (ok) { $('#backIn').value = ''; window.dispatchEvent(new Event('kr:refresh')); } });
     else if (a === 'restoreold') K.restoreOld();
     else if (a === 'admclose') { admOpen = false; window.dispatchEvent(new Event('kr:refresh')); }
-    else if (a === 'mmake') make('m'); else if (a === 'zmake') make('z');
-    else if (a === 'mlist') list('m'); else if (a === 'zlist') list('z');
+    else if (a === 'mmake') make('m'); else if (a === 'zmake') make('z'); else if (a === 'rmake') make('r');
+    else if (a === 'mlist') list('m'); else if (a === 'zlist') list('z'); else if (a === 'rlist') list('r');
     else if (a === 'verify') { var k = admKey(); if (k) K.admin.verify(k, $('#verIn').value).then(function (d) { lastNo = d.no || ''; $('#verOut').textContent = d.out; }, function (e) { $('#verOut').textContent = e.message; }); }
     else if (a === 'verdone') { var k2 = admKey(); if (!k2) return; if (!lastNo) return K.toast('Önce maili doğrula.'); K.admin.done(k2, lastNo).then(function () { K.toast('#' + lastNo + ' tamamlandı olarak işaretlendi.'); }, function (e) { K.toast(e.message); }); }
   });
