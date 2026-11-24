@@ -36,3 +36,11 @@ Forevye Mağaza'nın abonelik tarafı Nexus Pass'in kendi ekranlarına işlendi;
 Kristal sunucusu ayrıdır (Cloudflare Worker + D1, hava reposundaki `worker/`); Nexus girişi gerektirmez, kendi hesabı vardır (Site ID + anahtar, `localStorage`). **Kurulum:** `assets/config.js` → `KRISTAL_API_BASE`; hava reposunda `wrangler.toml` → `MARKET_ORIGIN = "https://mhaforevye.github.io"` (yalnızca alan adı) ve `npx wrangler deploy`, yoksa bakiye gelmez (CORS). Hava'daki `MARKET_URL` ve Mantar Pano'daki `STORE_URL` bu sitenin adresine (`…/nexus-pass/`) çevrilmeli. Testler: `npm test`.
 
 **Retro Camera:** `config.js` → `RETRO_URL` (ve `ZAMAN_URL`) gerçek yayın adresi olmalı. Sunucu tarafında `retro` ürünü, `/api/rpass/buy`, `/api/admin/rpass(es)` ve `/api/retro/redeem|verify` uçları gerekir; ayrıntı Retro Camera'daki `SUNUCU.md` dosyasında.
+
+## Pass Studio arayüzü
+- Masaüstünde sol gezinme paneli, üst bağlantı durumları ve üyelik özeti; mobilde alt gezinme kullanılır.
+- `Bağlı uygulamalar` alanı Nexus çekirdeğini, Kristal hesabını, Mantar Pano'yu, Zamanlayıcı'yı, Retro Camera'yı ve Astrophoto Cam paket akışını tek merkezde toplar. Uygulama adresleri `assets/config.js` içindeki mevcut değişkenlerden okunur; adresi tanımsız servis için sahte bağlantı oluşturulmaz.
+- Mantar Pano, Zamanlayıcı ve Retro Camera aktivasyon kodları `Üyeliklerim` ekranından kendi uygulamasına kod parametresiyle açılmaya devam eder. Kristal hesabı, Hava/önceki Mağaza ile mevcut Site ID hesabını kullanır; Nexus FN oturumu ayrı ve sekme kapsamındadır.
+- Arka plandaki masa lambasının sıcak sarı ışığı sabit yanar. Başlık SVG üzerinde sürüklenebilir veya `Başlık yönü` kaydırıcısıyla ayarlanabilir; `Sıfırla` başlangıç açısına döndürür.
+
+Bu arayüz derleme gerektirmez. GitHub Pages için `index.html` ve `assets/` klasörünü mevcut depo köküne gönder. Kontrol: `npm test`.

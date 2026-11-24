@@ -56,15 +56,30 @@ const entCard=e=>`<a class="card tap" href="#ent/${encodeURIComponent(e.id)}"><d
 const prodCard=(p,owned)=>`<a class="card tap" href="#p/${encodeURIComponent(p.id)}"><div class="row"><h3>${esc(p.app)}</h3><b>${fm(p.price)}</b></div><div>${esc(p.name)} · ${dur(p.dur)}</div><div class="mut">${esc(p.desc)}</div>${owned?'<div class="ok" style="font-size:13px;margin-top:4px">✓ Aktif üyeliğin var</div>':''}</a>`;
 const histRow=x=>`<div class="card"><div class="row"><h3>${esc(x.app)}</h3>${badge(x.status)}</div><div>${esc(x.name)}</div><div class="mut">${fmt(x.at)} · ${fm(x.status==='success'?x.price:0)} · ${esc(x.id)}</div></div>`;
 
-async function refreshBal(){const m=await API.me();$('#bal').textContent=fm(m.balance);return m}
+function systemCard(icon,kind,name,desc,url,action,state,internal){
+ const href=internal?url:(/^https:\/\//i.test(String(url||''))?url:'');
+ return `<article class="system-card"><div class="system-card-top"><span class="system-icon">${icon}</span><span class="system-kind">${esc(kind)}</span></div><h3>${esc(name)}</h3><p>${esc(desc)}</p><div class="system-state"><i class="${state&&state.includes('ÇEVRİMDIŞI')?'is-off':''}"></i>${esc(state)}</div>${href?`<a class="system-open" href="${esc(href)}" ${internal?'':'target="_blank" rel="noopener noreferrer"'}>${esc(action)} <span>↗</span></a>`:`<span class="system-open disabled">Adres tanımlanmamış</span>`}</article>`;
+}
+function systemsMarkup(compact){
+ const entries=[
+  systemCard('✦','CORE / ACCOUNT','FOREVYE NEXUS','Ana hesap, FN bakiyesi, profil ve Nexus servislerinin merkezi.',CFG.NEXUS_URL,'Nexus’u aç',tok?'PASS OTURUMU AKTİF':'NEXUS HESABIYLA GİRİŞ',false),
+  systemCard('◆','WALLET / CRYSTAL','Kristal hesabı','Hava ve önceki Mağaza ile ortak Site ID hesabın, bakiye ve hesap yedeği.','#acct','Hesabı yönet',KR.offline()?'ÇEVRİMDIŞI · SON BİLİNEN VERİ':'KRİSTAL SERVİSİ HAZIR',true),
+  systemCard('⌘','PRODUCTIVITY','Mantar Pano','Satın aldığın Pro ve Sınırsız kodları tek dokunuşla uygulamaya aktar. ',CFG.MANTAR_URL,'Mantar Pano’yu aç',CFG.MANTAR_URL?'YAYIN ADRESİ TANIMLI':'ADRES BEKLENİYOR',false),
+  systemCard('◷','FOCUS / TIME','Zamanlayıcı','Plus ve Premium erişimini, kodlarını ve sürelerini buradan yönet.',CFG.ZAMAN_URL,'Zamanlayıcı’yı aç',CFG.ZAMAN_URL?'YAYIN ADRESİ TANIMLI':'ADRES BEKLENİYOR',false),
+  systemCard('▣','CREATIVE / CAMERA','Retro Camera','Premium aktivasyon kodların ve kamera uygulaması aynı akışta.',CFG.RETRO_URL,'Retro Camera’yı aç',CFG.RETRO_URL?'YAYIN ADRESİ TANIMLI':'ADRES BEKLENİYOR',false),
+  systemCard('✧','PHOTO / ACTIVATION','Astrophoto Cam','Kristal aktivasyon paketlerini keşfet; talep ve teslimat geçmişini takip et.','#discover','Paketleri incele','KRİSTAL PAKET AKIŞI',true)
+ ];
+ return `<section class="systems-section ${compact?'compact':''}"><div class="section-heading"><div><span class="eyebrow">ONE ECOSYSTEM</span><h2>Bağlı uygulamalar</h2></div>${compact?'<a href="#systems" class="text-link">Tüm sistemler ↗</a>':'<span class="section-note">FOREVYE dijital alanın</span>'}</div><div class="systems-grid">${entries.join('')}</div></section>`;
+}
+
+async function refreshBal(){const m=await API.me();$('#bal').textContent=fm(m.balance);paintSession();return m}
 
 const routes={
  async home(){skel();const m=await refreshBal(),act=m.entitlements.filter(e=>e.status==='active').sort((a,b)=>a.expires-b.expires),h=await API.purchases(0,3);
-  app.innerHTML=`<h1>NEXUS PASS</h1><p class="sub">FOREVYE üyeliklerin tek yerde.</p>
-  <div class="card"><div class="row"><div><b>${act.length}</b> aktif üyelik</div><div class="mut">${act.length?'En yakın bitiş: '+fmt(act[0].expires):''}</div></div>${act.length?'':'<p class="mut">Henüz aktif bir üyeliğin yok.</p>'}<a class="btn primary" href="#discover">Üyelikleri Keşfet</a></div>
-  ${KRUI.homeCard()}
-  <h2>Son hareketler</h2>${h.items.length?h.items.map(histRow).join('')+'<a class="btn" href="#history">Tüm geçmiş</a>':'<div class="empty">Henüz hareket yok.</div>'}
-  <p style="text-align:center"><button class="link" id="rs">Oturumu kapat</button></p>`;
+  app.innerHTML=`<section class="welcome-panel"><div class="welcome-copy"><span class="eyebrow">YOUR MEMBERSHIP, REIMAGINED</span><h1>Üyeliklerinin kontrolü <em>sende.</em></h1><p>FOREVYE dünyasındaki dijital ayrıcalıkların, uygulamaların ve hesapların için kişisel kontrol alanın.</p><div class="welcome-actions"><a class="btn primary" href="#discover">Paketleri keşfet <span>↗</span></a><a class="quiet-link" href="#systems">Ekosistemi görüntüle</a></div></div><div class="welcome-art"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="welcome-glyph">N<span>✦</span></div><div class="art-caption">NEXUS PASS <b>STUDIO / 01</b></div></div></section>
+  <section class="metric-grid"><article class="metric-card"><span>AKTİF ÜYELİK</span><strong>${act.length.toString().padStart(2,'0')}</strong><small>${act.length?'Kullanıma hazır ayrıcalık':'Henüz aktif üyelik yok'}</small></article><article class="metric-card accent"><span>FN BAKİYESİ</span><strong>${fm(m.balance)}</strong><small>Nexus ana hesabın</small></article><article class="metric-card"><span>EN YAKIN BİTİŞ</span><strong class="metric-date">${act.length?fmt(act[0].expires).split(' ').slice(0,2).join(' '):'—'}</strong><small>${act.length?left(act[0].expires)+' kaldı':'Aktif süre bulunmuyor'}</small></article></section>
+  ${systemsMarkup(true)}
+  <section class="lower-grid"><div><div class="section-heading"><div><span class="eyebrow">RECENT ACTIVITY</span><h2>Son hareketler</h2></div><a href="#history" class="text-link">Tüm geçmiş ↗</a></div>${h.items.length?h.items.map(histRow).join(''):'<div class="empty">Henüz hareket yok. İlk üyeliğini keşfetmeye başlayabilirsin.</div>'}</div><div class="account-shortcut">${KRUI.homeCard()}<div class="account-note"><span>GÜVENLİ OTURUM</span><p>Nexus Pass erişimin bu sekmede saklanır. Çıkış yaptığında tekrar Nexus üzerinden bağlanabilirsin.</p><button class="link" id="rs">Oturumu kapat</button></div></div></section>`;
   $('#rs').onclick=()=>{if(confirm('Bu oturum kapatılsın mı?')){API.logout();route()}}},
  async mine(){skel();const m=await refreshBal(),a=m.entitlements.filter(e=>e.status==='active'),x=m.entitlements.filter(e=>e.status!=='active');
   app.innerHTML=`<h1>Üyeliklerim</h1>${a.length?a.map(entCard).join(''):'<div class="empty">Henüz aktif bir üyeliğin yok.<br><br><a class="btn primary" href="#discover">Üyelikleri Keşfet</a></div>'}${x.length?'<h2>Süresi dolanlar</h2>'+x.map(entCard).join(''):''}${KRUI.codes()}`},
@@ -81,6 +96,7 @@ const routes={
   app.innerHTML=`<a href="#discover" class="mut">‹ Keşfet</a><h1>${esc(p.app)}</h1><p>${esc(p.name)}</p><div class="card"><b>Premium ile açılanlar</b><ul class="feat">${(p.features||[]).map(f=>`<li>${esc(f)}</li>`).join('')}</ul><table><tr><td>Süre</td><td>${dur(p.dur)}</td></tr><tr><td>Fiyat</td><td>${fm(p.price)}</td></tr><tr><td>Tahmini bakiye</td><td>${fm(m.balance-p.price)}</td></tr></table><p class="mut">Tek seferlik FN harcaması. Otomatik yenileme yok.</p></div>
   ${owned?`<div class="card ok">✓ Bu üyelik aktif · ${left(owned.expires)}</div>`:''}<button class="btn primary" id="buy" ${owned?'disabled':''}>FN ile Satın Al</button>`;
   $('#buy').onclick=()=>confirmBuy(p,m.balance)},
+ async systems(){skel();if(tok)await refreshBal();app.innerHTML=`<section class="page-intro"><span class="eyebrow">CONNECTED WORKSPACE</span><h1>FOREVYE <em>ekosistemi.</em></h1><p>Tek bir merkezden erişebildiğin uygulamalar. Satın aldığın kodlar, ilgili uygulamalara aktarılmak üzere üyeliklerinde hazır tutulur.</p></section>${systemsMarkup(false)}<div class="integration-note"><b>Hesaplar nasıl bağlanıyor?</b><p>FN üyelikleri Nexus hesabınla; Kristal bakiyesi ise Site ID hesabınla çalışır. Kristal hesabın Hava ve eski Mağaza ile ortak kimliğini kullanır. Bu ayrım, farklı servislerin güvenlik anahtarlarını birbirinden bağımsız tutar.</p><a href="#acct" class="text-link">Kristal hesabını yönet ↗</a></div>`},
  async history(page=0){skel();await refreshBal();const h=await API.purchases(page);
   app.innerHTML='<h1>Üyelik geçmişi</h1>'+(h.items.length?h.items.map(histRow).join(''):'<div class="empty">Henüz kayıt yok.</div>')+`<div class="row">${page?'<button class="btn" id="pv">‹ Önceki</button>':''}${h.more?'<button class="btn" id="nx">Sonraki ›</button>':''}</div>`+KRUI.reqs();
   if($('#pv'))$('#pv').onclick=()=>routes.history(page-1);if($('#nx'))$('#nx').onclick=()=>routes.history(page+1)}
@@ -109,19 +125,22 @@ function connectCard(msg){
   const nx=CFG.NEXUS_URL?CFG.NEXUS_URL.replace(/\/+$/,'')+'/#/pass':'';
   return `${msg?`<div class="card err">${esc(msg)}</div>`:''}<div class="card"><b>Nexus ile giriş</b><p class="mut">Nexus Pass üyelikleri Nexus hesabınla çalışır ve FN bakiyenle alınır. Nexus'a girip <b>İşlemler → Nexus Pass</b> düğmesine bas; buraya otomatik giriş yapılır. Kristalle alınan abonelikler (Mantar Pano, Zamanlayıcı, Astrophoto Cam) için Nexus girişi gerekmez.</p>${nx?`<a class="btn primary" href="${nx}">Nexus'u aç</a>`:'<p class="mut">Nexus adresi ayarlı değil (assets/config.js → NEXUS_URL).</p>'}</div>`;
 }
-function connectScreen(msg){$('#bal').textContent='';app.innerHTML=`<h1>NEXUS PASS</h1><p class="sub">FOREVYE üyeliklerin tek yerde.</p>`+connectCard(msg)}
-/* Nexus girişi yokken: kristalle alınan abonelikler yine çalışır */
+function connectScreen(msg){$('#bal').textContent='';app.innerHTML=`<section class="page-intro"><span class="eyebrow">NEXUS MEMBERSHIP</span><h1>NEXUS PASS <em>Studio.</em></h1><p>FN ile alınan üyelikleri görüntülemek ve yönetmek için Nexus hesabından güvenli geçiş yap.</p></section>`+connectCard(msg)+systemsMarkup(true)}
+/* Nexus girişi yokken: Kristal, kodlar ve uygulama bağlantıları çalışmaya devam eder. */
 function guest(r,msg){
   $('#bal').textContent='';
-  const part=r==='discover'?KRUI.shop():r==='mine'?KRUI.codes():r==='history'?KRUI.reqs():KRUI.homeCard()+KRUI.shop();
-  app.innerHTML=`<h1>NEXUS PASS</h1><p class="sub">FOREVYE üyeliklerin tek yerde.</p>`+connectCard(msg)+part;
+  const part=r==='discover'?KRUI.shop():r==='mine'?KRUI.codes():r==='history'?KRUI.reqs():r==='systems'?systemsMarkup(false):KRUI.homeCard()+systemsMarkup(true)+KRUI.shop();
+  app.innerHTML=`<section class="guest-welcome"><span class="eyebrow">PERSONAL MEMBERSHIP SPACE</span><h1>FOREVYE <em>Pass Studio.</em></h1><p>Uygulamaların, dijital paketlerin ve ayrıcalıkların için merkez.</p></section>`+connectCard(msg)+part;
 }
-function paintK(){const s=KR.S();$('#kbal').textContent='◆ '+(+s.bal||0).toLocaleString('tr-TR')}
+function paintK(){const s=KR.S();$('#kbal').textContent='◆ '+(+s.bal||0).toLocaleString('tr-TR');const offline=KR.offline();const label=$('#crystal-state'),dot=$('#crystal-dot');if(label)label.textContent=offline?'Kristal · çevrimdışı':'Kristal · hazır';if(dot)dot.classList.toggle('is-off',offline)}
+function paintSession(){const label=$('#nexus-state'),dot=$('#nexus-dot');if(label)label.textContent=tok?'Nexus · Pass oturumu açık':'Nexus · giriş bekleniyor';if(dot)dot.classList.toggle('is-on',!!tok)}
 async function route(){
   await boot;await Promise.race([KR.ready(),new Promise(r=>setTimeout(r,4000))]);
   const [r,a,b]=(location.hash.slice(1)||'home').split('/');$('#modal').hidden=true;
-  document.querySelectorAll('.tabs a[data-r]').forEach(t=>t.classList.toggle('on',t.dataset.r===({p:'discover',k:'discover',ent:'mine',acct:'home'}[r]||r)));
-  paintK();
+  const active=({p:'discover',k:'discover',ent:'mine',acct:'acct'}[r]||r);
+  document.querySelectorAll('.tabs a[data-r],.sidebar a[data-r]').forEach(t=>t.classList.toggle('on',t.dataset.r===active));
+  const routeNames={home:'OVERVIEW',mine:'MY MEMBERSHIPS',discover:'DISCOVER',history:'ACTIVITY',systems:'CONNECTED SYSTEMS',acct:'CRYSTAL ACCOUNT',p:'PACKAGE DETAIL',ent:'MEMBERSHIP DETAIL',k:'CRYSTAL PACK'};const routeLabel=$('#route-label');if(routeLabel)routeLabel.textContent=routeNames[r]||'NEXUS PASS';
+  paintK();paintSession();
   if(r==='k'){app.innerHTML=KRUI.detail(a,b);window.scrollTo(0,0);return}
   if(r==='acct'){app.innerHTML=KRUI.acct();window.scrollTo(0,0);return}
   if(!tok){if(r==='ent'||r==='p')return connectScreen(bootErr||undefined);return guest(r,bootErr||undefined)}
@@ -129,5 +148,5 @@ async function route(){
 }
 const net=()=>$('#offline').hidden=navigator.onLine;
 addEventListener('online',net);addEventListener('offline',net);addEventListener('hashchange',route);addEventListener('kr:refresh',()=>route());
-KR.onChange(()=>{paintK();if(/^#acct/.test(location.hash))route()});KR.start();
+KR.onChange(()=>{paintK();if(/^#acct/.test(location.hash))route()});KR.start();paintSession();
 net();route();

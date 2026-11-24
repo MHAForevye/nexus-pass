@@ -3,22 +3,128 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#171B20">
-<title>FOREVYE NEXUS · NEXUS PASS</title>
+<meta name="theme-color" content="#0d1115">
+<meta name="description" content="FOREVYE NEXUS PASS — üyelikler, dijital ayrıcalıklar ve uygulama bağlantıları.">
+<title>FOREVYE NEXUS · PASS STUDIO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
-<div id="offline" class="banner" hidden>⚠ Çevrimdışısın. Gösterilen veriler güncel olmayabilir.</div>
-<header class="top">
-  <div class="brand">FOREVYE NEXUS</div>
-  <div class="bals"><a class="bal" id="kbal" href="#acct" aria-label="Kristal bakiyesi"></a><div class="bal" id="bal" aria-label="FN bakiyesi"></div></div>
-</header>
-<main id="app" aria-live="polite"></main>
+<div id="offline" class="banner" hidden>Bağlantı kesildi · son bilinen veriler gösteriliyor.</div>
+<div class="app-frame">
+  <header class="top">
+    <a class="brand" href="#home" aria-label="FOREVYE NEXUS PASS ana sayfa">
+      <span class="brand-mark"><i></i><i></i><i></i></span>
+      <span class="brand-copy"><b>FOREVYE</b><small>NEXUS <em>PASS STUDIO</em></small></span>
+    </a>
+    <div class="top-right">
+      <div class="connection-pills">
+        <span class="connection-pill"><i id="nexus-dot"></i><span id="nexus-state">Nexus · giriş bekleniyor</span></span>
+        <span class="connection-pill"><i id="crystal-dot"></i><span id="crystal-state">Kristal · bağlanıyor</span></span>
+      </div>
+      <div class="bals">
+        <a class="bal crystal-bal" id="kbal" href="#acct" aria-label="Kristal bakiyesi"></a>
+        <div class="bal fn-bal" id="bal" aria-label="FN bakiyesi"></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="workspace">
+    <aside class="sidebar" aria-label="Ana menü">
+      <div class="side-label">ÇALIŞMA ALANI</div>
+      <a href="#home" data-r="home" class="side-link"><span class="side-icon">⌂</span><span>Genel bakış</span></a>
+      <a href="#mine" data-r="mine" class="side-link"><span class="side-icon">◷</span><span>Üyeliklerim</span></a>
+      <a href="#discover" data-r="discover" class="side-link"><span class="side-icon">✳</span><span>Keşfet</span><span class="side-arrow">↗</span></a>
+      <a href="#history" data-r="history" class="side-link"><span class="side-icon">≋</span><span>Hareketler</span></a>
+      <div class="side-divider"></div>
+      <div class="side-label">NEXUS EKOSİSTEMİ</div>
+      <a href="#systems" data-r="systems" class="side-link"><span class="side-icon">⌘</span><span>Bağlı sistemler</span></a>
+      <a href="#acct" data-r="acct" class="side-link"><span class="side-icon">◆</span><span>Kristal hesabı</span></a>
+      <div class="sidebar-bottom">
+        <div class="side-orbit"><span>✦</span></div>
+        <b>Her şey tek yerde.</b>
+        <p>Üyeliklerini yönet, ayrıcalıklarını keşfet, uygulamalarına geç.</p>
+        <a href="#systems">Ekosistemi keşfet <span>↗</span></a>
+      </div>
+      <div class="side-foot">FOREVYE NEXUS <span>·</span>  PASS STUDIO</div>
+    </aside>
+
+    <section class="content-area">
+      <div class="content-topline">
+        <div><span class="eyebrow">MEMBERSHIP CONTROL CENTER</span><span class="topline-slash"> / </span><span id="route-label">OVERVIEW</span></div>
+        <span class="live-label"><i></i> YOUR DIGITAL SPACE</span>
+      </div>
+      <main id="app" aria-live="polite"></main>
+      <footer class="page-footer"><span>FOREVYE NEXUS <b>PASS STUDIO</b></span><a href="#systems">Bağlı uygulamalar <span>↗</span></a></footer>
+    </section>
+  </div>
+</div>
+
+<!-- Interactive desk lamp: the warm beam remains on; only the head direction changes. -->
+<aside class="desk-lamp" id="deskLamp" aria-label="Etkileşimli masa lambası">
+  <div class="lamp-caption"><span class="lamp-live"><i></i> AMBIENT LIGHT</span><span>01 / STUDIO</span></div>
+  <svg id="lampSvg" class="lamp-svg" viewBox="0 0 360 450" role="img" aria-labelledby="lampTitle lampDesc">
+    <title id="lampTitle">Ayarlanabilir masa lambası</title>
+    <desc id="lampDesc">Sabit sıcak sarı ışık veren, başlığı fareyle veya dokunarak hareket ettirilebilen masa lambası.</desc>
+    <defs>
+      <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f5dfac"/><stop offset=".24" stop-color="#8e7046"/><stop offset=".5" stop-color="#d9bc83"/><stop offset=".76" stop-color="#675039"/><stop offset="1" stop-color="#d8bd8d"/></linearGradient>
+      <linearGradient id="darkMetal" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#222a2d"/><stop offset=".5" stop-color="#71736b"/><stop offset="1" stop-color="#1b2225"/></linearGradient>
+      <linearGradient id="shade" x1="0" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#f0d8a1"/><stop offset=".28" stop-color="#9a815a"/><stop offset=".65" stop-color="#343537"/><stop offset="1" stop-color="#111719"/></linearGradient>
+      <linearGradient id="beam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd76d" stop-opacity=".32"/><stop offset=".38" stop-color="#ffcb54" stop-opacity=".12"/><stop offset="1" stop-color="#ffbc36" stop-opacity="0"/></linearGradient>
+      <radialGradient id="bulbGlow"><stop offset="0" stop-color="#fff4be" stop-opacity="1"/><stop offset=".4" stop-color="#ffe087" stop-opacity=".85"/><stop offset="1" stop-color="#ffca4f" stop-opacity="0"/></radialGradient>
+      <filter id="lampBloom" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="12"/></filter>
+      <filter id="softShadow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="7"/></filter>
+    </defs>
+    <g id="lampLight" transform="rotate(-20 164 202)" pointer-events="none">
+      <path d="M119 214 L209 214 L286 431 L40 431 Z" fill="url(#beam)"/>
+      <path d="M120 209 L208 209 L251 336 L84 336 Z" fill="#ffd15e" opacity=".045" filter="url(#lampBloom)"/>
+    </g>
+    <ellipse cx="218" cy="421" rx="103" ry="13" fill="#000" opacity=".5" filter="url(#softShadow)"/>
+    <path d="M232 393 L226 303" stroke="#080d10" stroke-width="23" stroke-linecap="round" opacity=".7"/>
+    <path d="M232 392 L226 303" stroke="url(#metal)" stroke-width="15" stroke-linecap="round"/>
+    <path d="M226 304 L164 202" stroke="#080d10" stroke-width="19" stroke-linecap="round" opacity=".65"/>
+    <path d="M226 304 L164 202" stroke="url(#metal)" stroke-width="12" stroke-linecap="round"/>
+    <path d="M221 305 L159 205" stroke="#fff0c5" stroke-opacity=".28" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="226" cy="304" r="17" fill="#171d20" stroke="url(#metal)" stroke-width="5"/>
+    <circle cx="226" cy="304" r="5" fill="#e8ce99"/>
+    <circle cx="164" cy="202" r="17" fill="#171d20" stroke="url(#metal)" stroke-width="5"/>
+    <circle cx="164" cy="202" r="5" fill="#e8ce99"/>
+    <path d="M188 401 Q217 389 250 401 L278 414 Q280 423 266 428 L146 428 Q133 423 141 414 Z" fill="#090e11" opacity=".65"/>
+    <path d="M187 390 Q216 379 249 391 L273 405 Q277 412 264 416 L149 416 Q135 411 143 403 Z" fill="url(#darkMetal)" stroke="url(#metal)" stroke-width="2"/>
+    <path d="M158 405 Q211 387 259 405" fill="none" stroke="#f4d9a2" stroke-opacity=".45" stroke-width="2"/>
+    <circle cx="210" cy="401" r="4" fill="#d6b777"/>
+    <g id="lampHead" transform="rotate(-20 164 202)" style="transform-origin:164px 202px">
+      <ellipse cx="164" cy="216" rx="48" ry="10" fill="#ffe19a" opacity=".22" filter="url(#lampBloom)"/>
+      <path d="M109 153 Q164 128 219 153 L208 210 Q164 229 120 210 Z" fill="url(#shade)" stroke="#d4b77f" stroke-width="2"/>
+      <path d="M118 157 Q164 140 211 157" fill="none" stroke="#fff0c9" stroke-opacity=".5" stroke-width="3"/>
+      <path d="M120 209 Q164 229 208 209" fill="none" stroke="#e4c27f" stroke-width="5"/>
+      <ellipse cx="164" cy="212" rx="43" ry="8" fill="#171718" stroke="#d8bd89" stroke-width="2"/>
+      <ellipse cx="164" cy="213" rx="28" ry="4.8" fill="#ffdc80" opacity=".9"/>
+      <ellipse cx="164" cy="214" rx="21" ry="24" fill="url(#bulbGlow)" opacity=".7" filter="url(#lampBloom)"/>
+      <path d="M153 190 L175 190 L174 207 Q164 213 154 207 Z" fill="#fff2b4" opacity=".75"/>
+      <path d="M133 149 Q164 137 195 149" fill="none" stroke="#fff0bd" stroke-width="1.5" stroke-opacity=".38"/>
+      <circle cx="164" cy="145" r="4" fill="#d7bd8c"/>
+      <path d="M164 145 L164 132" stroke="url(#metal)" stroke-width="6" stroke-linecap="round"/>
+    </g>
+    <path d="M164 202 L164 219" stroke="#e2c48d" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="164" cy="202" r="8" fill="#252b2c" stroke="#e0c18b" stroke-width="2"/>
+    <circle cx="164" cy="202" r="2.5" fill="#ffdd8d"/>
+  </svg>
+  <div class="lamp-controls">
+    <div class="lamp-control-heading"><label for="lampAngle">BAŞLIK YÖNÜ</label><span id="lampAngleValue">−20°</span></div>
+    <input id="lampAngle" type="range" min="-55" max="55" step="1" value="-20" aria-label="Masa lambası başlık yönü">
+    <div class="lamp-control-foot"><span>BAŞLIĞI SÜRÜKLE</span><button id="lampReset" type="button">SIFIRLA ↺</button></div>
+  </div>
+</aside>
+
 <nav class="tabs" aria-label="Ana gezinme">
-  <a href="#home" data-r="home">⌂<span>Ana Sayfa</span></a>
-  <a href="#mine" data-r="mine">◷<span>Üyeliklerim</span></a>
-  <a href="#discover" data-r="discover">◇<span>Keşfet</span></a>
-  <a href="#history" data-r="history">≡<span>Geçmiş</span></a>
+  <a href="#home" data-r="home">⌂<span>Genel</span></a>
+  <a href="#mine" data-r="mine">◷<span>Üyelikler</span></a>
+  <a href="#discover" data-r="discover">✳<span>Keşfet</span></a>
+  <a href="#systems" data-r="systems">⌘<span>Sistemler</span></a>
+  <a href="#history" data-r="history">≋<span>Geçmiş</span></a>
 </nav>
 <div id="modal" class="overlay" hidden></div>
 <script src="assets/config.js"></script>
@@ -26,5 +132,6 @@
 <script src="assets/kristal.js"></script>
 <script src="assets/kr-ui.js"></script>
 <script src="assets/app.js"></script>
+<script src="assets/desk-lamp.js"></script>
 </body>
 </html>
