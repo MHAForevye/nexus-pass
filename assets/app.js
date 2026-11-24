@@ -63,7 +63,7 @@ function systemCard(icon,kind,name,desc,url,action,state,internal){
 function systemsMarkup(compact){
  const entries=[
   systemCard('✦','CORE / ACCOUNT','FOREVYE NEXUS','Ana hesap, FN bakiyesi, profil ve Nexus servislerinin merkezi.',CFG.NEXUS_URL,'Nexus’u aç',tok?'PASS OTURUMU AKTİF':'NEXUS HESABIYLA GİRİŞ',false),
-  systemCard('◆','WALLET / CRYSTAL','Kristal hesabı','Hava ve önceki Mağaza ile ortak Site ID hesabın, bakiye ve hesap yedeği.','#acct','Hesabı yönet',KR.offline()?'ÇEVRİMDIŞI · SON BİLİNEN VERİ':'KRİSTAL SERVİSİ HAZIR',true),
+  systemCard('<img class="crystal-mark" src="assets/crystal.svg" alt="">','WALLET / CRYSTAL','Kristal hesabı','Hava ve önceki Mağaza ile ortak Site ID hesabın, bakiye ve hesap yedeği.','#acct','Hesabı yönet',KR.offline()?'ÇEVRİMDIŞI · SON BİLİNEN VERİ':'KRİSTAL SERVİSİ HAZIR',true),
   systemCard('⌘','PRODUCTIVITY','Mantar Pano','Satın aldığın Pro ve Sınırsız kodları tek dokunuşla uygulamaya aktar. ',CFG.MANTAR_URL,'Mantar Pano’yu aç',CFG.MANTAR_URL?'YAYIN ADRESİ TANIMLI':'ADRES BEKLENİYOR',false),
   systemCard('◷','FOCUS / TIME','Zamanlayıcı','Plus ve Premium erişimini, kodlarını ve sürelerini buradan yönet.',CFG.ZAMAN_URL,'Zamanlayıcı’yı aç',CFG.ZAMAN_URL?'YAYIN ADRESİ TANIMLI':'ADRES BEKLENİYOR',false),
   systemCard('▣','CREATIVE / CAMERA','Retro Camera','Premium aktivasyon kodların ve kamera uygulaması aynı akışta.',CFG.RETRO_URL,'Retro Camera’yı aç',CFG.RETRO_URL?'YAYIN ADRESİ TANIMLI':'ADRES BEKLENİYOR',false),
@@ -132,7 +132,7 @@ function guest(r,msg){
   const part=r==='discover'?KRUI.shop():r==='mine'?KRUI.codes():r==='history'?KRUI.reqs():r==='systems'?systemsMarkup(false):KRUI.homeCard()+systemsMarkup(true)+KRUI.shop();
   app.innerHTML=`<section class="guest-welcome"><span class="eyebrow">PERSONAL MEMBERSHIP SPACE</span><h1>FOREVYE <em>Pass Studio.</em></h1><p>Uygulamaların, dijital paketlerin ve ayrıcalıkların için merkez.</p></section>`+connectCard(msg)+part;
 }
-function paintK(){const s=KR.S();$('#kbal').textContent='◆ '+(+s.bal||0).toLocaleString('tr-TR');const offline=KR.offline();const label=$('#crystal-state'),dot=$('#crystal-dot');if(label)label.textContent=offline?'Kristal · çevrimdışı':'Kristal · hazır';if(dot)dot.classList.toggle('is-off',offline)}
+function paintK(){const s=KR.S();$('#kbal').innerHTML='<img class="crystal-inline" src="assets/crystal.svg" alt=""><span>'+(+s.bal||0).toLocaleString('tr-TR')+'</span>'; const offline=KR.offline();const label=$('#crystal-state'),dot=$('#crystal-dot');if(label)label.textContent=offline?'Kristal · çevrimdışı':'Kristal · hazır';if(dot)dot.classList.toggle('is-off',offline)}
 function paintSession(){const label=$('#nexus-state'),dot=$('#nexus-dot');if(label)label.textContent=tok?'Nexus · Pass oturumu açık':'Nexus · giriş bekleniyor';if(dot)dot.classList.toggle('is-on',!!tok)}
 async function route(){
   await boot;await Promise.race([KR.ready(),new Promise(r=>setTimeout(r,4000))]);

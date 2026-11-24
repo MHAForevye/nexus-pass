@@ -41,7 +41,7 @@
       <div class="side-divider"></div>
       <div class="side-label">NEXUS EKOSİSTEMİ</div>
       <a href="#systems" data-r="systems" class="side-link"><span class="side-icon">⌘</span><span>Bağlı sistemler</span></a>
-      <a href="#acct" data-r="acct" class="side-link"><span class="side-icon">◆</span><span>Kristal hesabı</span></a>
+      <a href="#acct" data-r="acct" class="side-link"><span class="side-icon"><img class="nav-crystal" src="assets/crystal.svg" alt=""></span><span>Kristal hesabı</span></a>
       <div class="sidebar-bottom">
         <div class="side-orbit"><span>✦</span></div>
         <b>Her şey tek yerde.</b>
@@ -62,61 +62,73 @@
   </div>
 </div>
 
-<!-- Interactive desk lamp: the warm beam remains on; only the head direction changes. -->
-<aside class="desk-lamp" id="deskLamp" aria-label="Etkileşimli masa lambası">
-  <div class="lamp-caption"><span class="lamp-live"><i></i> AMBIENT LIGHT</span><span>01 / STUDIO</span></div>
-  <svg id="lampSvg" class="lamp-svg" viewBox="0 0 360 450" role="img" aria-labelledby="lampTitle lampDesc">
-    <title id="lampTitle">Ayarlanabilir masa lambası</title>
-    <desc id="lampDesc">Sabit sıcak sarı ışık veren, başlığı fareyle veya dokunarak hareket ettirilebilen masa lambası.</desc>
-    <defs>
-      <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f5dfac"/><stop offset=".24" stop-color="#8e7046"/><stop offset=".5" stop-color="#d9bc83"/><stop offset=".76" stop-color="#675039"/><stop offset="1" stop-color="#d8bd8d"/></linearGradient>
-      <linearGradient id="darkMetal" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#222a2d"/><stop offset=".5" stop-color="#71736b"/><stop offset="1" stop-color="#1b2225"/></linearGradient>
-      <linearGradient id="shade" x1="0" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#f0d8a1"/><stop offset=".28" stop-color="#9a815a"/><stop offset=".65" stop-color="#343537"/><stop offset="1" stop-color="#111719"/></linearGradient>
-      <linearGradient id="beam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd76d" stop-opacity=".32"/><stop offset=".38" stop-color="#ffcb54" stop-opacity=".12"/><stop offset="1" stop-color="#ffbc36" stop-opacity="0"/></linearGradient>
-      <radialGradient id="bulbGlow"><stop offset="0" stop-color="#fff4be" stop-opacity="1"/><stop offset=".4" stop-color="#ffe087" stop-opacity=".85"/><stop offset="1" stop-color="#ffca4f" stop-opacity="0"/></radialGradient>
-      <filter id="lampBloom" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="12"/></filter>
-      <filter id="softShadow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="7"/></filter>
-    </defs>
-    <g id="lampLight" transform="rotate(-20 164 202)" pointer-events="none">
-      <path d="M119 214 L209 214 L286 431 L40 431 Z" fill="url(#beam)"/>
-      <path d="M120 209 L208 209 L251 336 L84 336 Z" fill="#ffd15e" opacity=".045" filter="url(#lampBloom)"/>
-    </g>
-    <ellipse cx="218" cy="421" rx="103" ry="13" fill="#000" opacity=".5" filter="url(#softShadow)"/>
-    <path d="M232 393 L226 303" stroke="#080d10" stroke-width="23" stroke-linecap="round" opacity=".7"/>
-    <path d="M232 392 L226 303" stroke="url(#metal)" stroke-width="15" stroke-linecap="round"/>
-    <path d="M226 304 L164 202" stroke="#080d10" stroke-width="19" stroke-linecap="round" opacity=".65"/>
-    <path d="M226 304 L164 202" stroke="url(#metal)" stroke-width="12" stroke-linecap="round"/>
-    <path d="M221 305 L159 205" stroke="#fff0c5" stroke-opacity=".28" stroke-width="2" stroke-linecap="round"/>
-    <circle cx="226" cy="304" r="17" fill="#171d20" stroke="url(#metal)" stroke-width="5"/>
-    <circle cx="226" cy="304" r="5" fill="#e8ce99"/>
-    <circle cx="164" cy="202" r="17" fill="#171d20" stroke="url(#metal)" stroke-width="5"/>
-    <circle cx="164" cy="202" r="5" fill="#e8ce99"/>
-    <path d="M188 401 Q217 389 250 401 L278 414 Q280 423 266 428 L146 428 Q133 423 141 414 Z" fill="#090e11" opacity=".65"/>
-    <path d="M187 390 Q216 379 249 391 L273 405 Q277 412 264 416 L149 416 Q135 411 143 403 Z" fill="url(#darkMetal)" stroke="url(#metal)" stroke-width="2"/>
-    <path d="M158 405 Q211 387 259 405" fill="none" stroke="#f4d9a2" stroke-opacity=".45" stroke-width="2"/>
-    <circle cx="210" cy="401" r="4" fill="#d6b777"/>
-    <g id="lampHead" transform="rotate(-20 164 202)" style="transform-origin:164px 202px">
-      <ellipse cx="164" cy="216" rx="48" ry="10" fill="#ffe19a" opacity=".22" filter="url(#lampBloom)"/>
-      <path d="M109 153 Q164 128 219 153 L208 210 Q164 229 120 210 Z" fill="url(#shade)" stroke="#d4b77f" stroke-width="2"/>
-      <path d="M118 157 Q164 140 211 157" fill="none" stroke="#fff0c9" stroke-opacity=".5" stroke-width="3"/>
-      <path d="M120 209 Q164 229 208 209" fill="none" stroke="#e4c27f" stroke-width="5"/>
-      <ellipse cx="164" cy="212" rx="43" ry="8" fill="#171718" stroke="#d8bd89" stroke-width="2"/>
-      <ellipse cx="164" cy="213" rx="28" ry="4.8" fill="#ffdc80" opacity=".9"/>
-      <ellipse cx="164" cy="214" rx="21" ry="24" fill="url(#bulbGlow)" opacity=".7" filter="url(#lampBloom)"/>
-      <path d="M153 190 L175 190 L174 207 Q164 213 154 207 Z" fill="#fff2b4" opacity=".75"/>
-      <path d="M133 149 Q164 137 195 149" fill="none" stroke="#fff0bd" stroke-width="1.5" stroke-opacity=".38"/>
-      <circle cx="164" cy="145" r="4" fill="#d7bd8c"/>
-      <path d="M164 145 L164 132" stroke="url(#metal)" stroke-width="6" stroke-linecap="round"/>
-    </g>
-    <path d="M164 202 L164 219" stroke="#e2c48d" stroke-width="6" stroke-linecap="round"/>
-    <circle cx="164" cy="202" r="8" fill="#252b2c" stroke="#e0c18b" stroke-width="2"/>
-    <circle cx="164" cy="202" r="2.5" fill="#ffdd8d"/>
-  </svg>
-  <div class="lamp-controls">
-    <div class="lamp-control-heading"><label for="lampAngle">BAŞLIK YÖNÜ</label><span id="lampAngleValue">−20°</span></div>
-    <input id="lampAngle" type="range" min="-55" max="55" step="1" value="-20" aria-label="Masa lambası başlık yönü">
-    <div class="lamp-control-foot"><span>BAŞLIĞI SÜRÜKLE</span><button id="lampReset" type="button">SIFIRLA ↺</button></div>
+<!-- Interactive desk lamp. The shade pivots from the arm's fixed end joint; the warm light never switches off. -->
+<aside class="desk-lamp" id="deskLamp" aria-label="Sabit sarı ışıklı, ayarlanabilir masa lambası">
+  <div class="lamp-caption">
+    <span class="lamp-live"><i></i> AMBIENT LIGHT · AÇIK</span>
+    <span><b id="lampAngleValue">−18°</b> · BAŞLIĞI SÜRÜKLE</span>
   </div>
+  <svg id="lampSvg" class="lamp-svg" viewBox="0 0 320 430" role="img" aria-labelledby="lampTitle lampDesc">
+    <title id="lampTitle">Ayarlanabilir masa lambası</title>
+    <desc id="lampDesc">Sarı ışığı sürekli açık olan masa lambasının başlığı, bağlı olduğu mafsaldan tutularak çevrilebilir. Klavyede sağ ve sol ok tuşları da kullanılabilir.</desc>
+    <defs>
+      <linearGradient id="lampMetal" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#fff0c8"/><stop offset=".2" stop-color="#a27c47"/><stop offset=".48" stop-color="#f1d49b"/><stop offset=".72" stop-color="#6f5434"/><stop offset="1" stop-color="#e7c98e"/>
+      </linearGradient>
+      <linearGradient id="lampShade" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#e5c891"/><stop offset=".35" stop-color="#786044"/><stop offset=".7" stop-color="#303b3e"/><stop offset="1" stop-color="#151d20"/>
+      </linearGradient>
+      <linearGradient id="lampBeam" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#ffd875" stop-opacity=".3"/><stop offset=".52" stop-color="#ffc94e" stop-opacity=".11"/><stop offset="1" stop-color="#ffc94e" stop-opacity="0"/>
+      </linearGradient>
+      <radialGradient id="lampBulb"><stop offset="0" stop-color="#fff8cf"/><stop offset=".3" stop-color="#ffe6a0" stop-opacity=".95"/><stop offset="1" stop-color="#ffca58" stop-opacity="0"/></radialGradient>
+      <filter id="lampGlow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="11"/></filter>
+      <filter id="lampShadow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
+    </defs>
+
+    <!-- The beam shares the exact same pivot as the shade. -->
+    <g id="lampLight" transform="rotate(-18 145 190)" pointer-events="none">
+      <path d="M103 166 L187 166 L300 425 L-10 425 Z" fill="url(#lampBeam)"/>
+      <ellipse cx="145" cy="240" rx="112" ry="75" fill="#ffc95a" opacity=".045" filter="url(#lampGlow)"/>
+    </g>
+
+    <!-- Weighted base and articulated arm. -->
+    <ellipse cx="215" cy="409" rx="82" ry="10" fill="#000" opacity=".42" filter="url(#lampShadow)"/>
+    <path d="M221 391 L213 300" stroke="#090f12" stroke-width="21" stroke-linecap="round" opacity=".8"/>
+    <path d="M221 391 L213 300" stroke="url(#lampMetal)" stroke-width="13" stroke-linecap="round"/>
+    <path d="M213 300 L145 190" stroke="#090f12" stroke-width="19" stroke-linecap="round" opacity=".78"/>
+    <path d="M213 300 L145 190" stroke="url(#lampMetal)" stroke-width="12" stroke-linecap="round"/>
+    <path d="M208 299 L140 194" stroke="#fff0c9" stroke-width="2" stroke-opacity=".4" stroke-linecap="round"/>
+
+    <!-- Head and short mounting neck rotate together around the actual arm-end hinge. -->
+    <g id="lampHead" transform="rotate(-18 145 190)" tabindex="0" role="slider" aria-label="Lamba başlık yönü" aria-valuemin="-48" aria-valuemax="48" aria-valuenow="-18" aria-valuetext="Eksi 18 derece" aria-keyshortcuts="ArrowLeft ArrowRight Home">
+      <path d="M90 112 Q145 87 200 112 L185 166 Q145 187 105 166 Z" fill="url(#lampShade)" stroke="#d7b77b" stroke-width="2"/>
+      <path d="M98 115 Q145 96 192 115" fill="none" stroke="#fff0c8" stroke-width="3" stroke-opacity=".52"/>
+      <path d="M105 164 Q145 183 185 164" fill="none" stroke="#f0d49b" stroke-width="4"/>
+      <ellipse cx="145" cy="166" rx="40" ry="7" fill="#141b1e" stroke="#d8bd88" stroke-width="2"/>
+      <ellipse cx="145" cy="167" rx="27" ry="4" fill="#ffda7d" opacity=".92"/>
+      <ellipse cx="145" cy="169" rx="24" ry="24" fill="url(#lampBulb)" opacity=".9" filter="url(#lampGlow)"/>
+      <path d="M136 151 Q145 145 154 151 L153 165 Q145 170 137 165 Z" fill="#fff2bc" opacity=".85"/>
+      <path d="M145 166 L145 190" stroke="url(#lampMetal)" stroke-width="9" stroke-linecap="round"/>
+      <path d="M141 174 L149 174" stroke="#fff0c8" stroke-width="2" stroke-opacity=".6"/>
+      <path d="M86 112 Q145 83 204 112" fill="none" stroke="#fff0c0" stroke-width="1.3" stroke-opacity=".26"/>
+      <path d="M91 112 L105 166" stroke="#fff0c4" stroke-width="1.5" stroke-opacity=".2"/>
+      <path d="M199 112 L185 166" stroke="#090f12" stroke-width="2" stroke-opacity=".32"/>
+      <path d="M89 111 Q145 84 201 111 L186 169 Q145 190 104 169 Z" fill="transparent" stroke="transparent" stroke-width="18"/>
+    </g>
+
+    <!-- Fixed hinge cap: the shade always remains physically attached to this point. -->
+    <circle cx="145" cy="190" r="16" fill="#171f22" stroke="url(#lampMetal)" stroke-width="5"/>
+    <circle cx="145" cy="190" r="6" fill="#d9bd88"/>
+    <circle cx="145" cy="190" r="2.3" fill="#fff1c5"/>
+    <circle cx="213" cy="300" r="16" fill="#171f22" stroke="url(#lampMetal)" stroke-width="5"/>
+    <circle cx="213" cy="300" r="5" fill="#dfc38d"/>
+
+    <!-- Base foot. -->
+    <path d="M179 391 Q214 377 248 391 L276 404 Q280 413 264 418 L166 418 Q149 413 154 404 Z" fill="#101719" stroke="url(#lampMetal)" stroke-width="2"/>
+    <path d="M169 403 Q215 384 259 403" fill="none" stroke="#fff0c5" stroke-width="2" stroke-opacity=".5"/>
+    <circle cx="215" cy="401" r="4" fill="#e2c58e"/>
+  </svg>
 </aside>
 
 <nav class="tabs" aria-label="Ana gezinme">

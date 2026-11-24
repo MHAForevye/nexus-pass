@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" width="36" height="36" fill="none">
+  <defs>
+    <linearGradient id="quartzMain" x1="7" y1="3" x2="25" y2="31" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E5FFFF"/><stop offset=".28" stop-color="#83E7F0"/><stop offset=".7" stop-color="#4AB7D0"/><stop offset="1" stop-color="#286C91"/>
+    </linearGradient>
+    <linearGradient id="quartzLit" x1="7" y1="8" x2="17" y2="31" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F3FFFF"/><stop offset="1" stop-color="#71D7E8"/>
+    </linearGradient>
+    <linearGradient id="quartzDeep" x1="24" y1="8" x2="28" y2="30" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8AEAF0"/><stop offset="1" stop-color="#24658E"/>
+    </linearGradient>
+  </defs>
+  <!-- Left crystal shard -->
+  <path d="M3 27 1.8 19.8 5.4 12.1 10.2 15.1 10.8 24.2 7.1 30.4Z" fill="url(#quartzLit)" stroke="#B7F4F6" stroke-width=".8" stroke-linejoin="round"/>
+  <path d="M5.4 12.1 8.4 8.5 10.2 15.1Z" fill="#E8FFFF" fill-opacity=".72"/>
+  <path d="m3 27 4.1-11.9 3.7 9.1-3.7 6.2Z" fill="#4CAFCB" fill-opacity=".48"/>
+  <!-- Main hexagonal quartz prism -->
+  <path d="m10.1 29.7-3.2-9.1 2.2-12.2L17.2 2l8.2 6.5 1.8 12.7-4.5 9.1-6.5 3.1Z" fill="url(#quartzMain)" stroke="#C5F8F8" stroke-width="1.05" stroke-linejoin="round"/>
+  <path d="M17.2 2 9.1 8.4 6.9 20.6 17.2 33.4Z" fill="url(#quartzLit)"/>
+  <path d="M17.2 2 25.4 8.5 27.2 21.2 16.2 33.4Z" fill="url(#quartzDeep)"/>
+  <path d="m9.1 8.4 8.1-6.4 8.2 6.5-5.2 3.4-6.2.1Z" fill="#E9FFFF" fill-opacity=".54"/>
+  <path d="m9.1 8.4 5 3.6 3.1 21.4M25.4 8.5l-5.2 3.4-4 21.5M6.9 20.6l9.3-8.6 11 9.2M17.2 2v9.8" stroke="#F1FFFF" stroke-opacity=".68" stroke-width=".82" stroke-linejoin="round"/>
+  <path d="m14.1 6.5 2.4-1.9" stroke="white" stroke-width="1.2" stroke-linecap="round" stroke-opacity=".9"/>
+  <!-- Small right shard -->
+  <path d="m24.5 29.7 1.2-9.4 4.3-8.1 4.4 7.8-1.3 7.3-5.3 3.5Z" fill="url(#quartzDeep)" stroke="#8EDDEB" stroke-width=".85" stroke-linejoin="round"/>
+  <path d="m30 12.2 4.4 7.8-5.1.3Z" fill="#DBFFFF" fill-opacity=".68"/>
+  <path d="m25.7 20.3 3.6-.1-1.5 10.6" stroke="#DDFEFF" stroke-opacity=".65" stroke-width=".8"/>
+</svg>
