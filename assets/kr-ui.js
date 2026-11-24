@@ -4,15 +4,15 @@
 (function () {
   var K = window.KR, $ = function (s) { return document.querySelector(s); };
   var esc = function (v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); };
-  var kc = function (n) { return '<span class="crystal-amount"><img src="assets/crystal.svg" alt=""><b>' + (+n || 0).toLocaleString('tr-TR') + '</b></span>'; };
+  var kc = function (n) { return '◆ ' + (+n || 0).toLocaleString('tr-TR', { maximumFractionDigits: 4 }); };
   var admOpen = false, lastNo = '', camDraft = '';
 
   /* ===== Liste kartları ===== */
   function item(href, icon, title, sub, right, off) {
-    return '<a class="card tap' + (off ? ' dim' : '') + '" href="#' + href + '"><div class="row"><h3>' + icon + ' ' + esc(title) + '</h3><span class="item-price">' + right + '</span></div><div class="mut">' + esc(sub) + '</div></a>';
+    return '<a class="card tap' + (off ? ' dim' : '') + '" href="#' + href + '"><div class="row"><h3>' + icon + ' ' + esc(title) + '</h3><b>' + esc(right) + '</b></div><div class="mut">' + esc(sub) + '</div></a>';
   }
   function shop() {
-    var S = K.S(), h = '<h2>Kristal ile · abonelikler</h2><p class="mut">Bakiyen: ' + kc(S.bal) + (K.offline() ? ' · sunucuya bağlanılamadı, son bilinen değer' : '') + ' · <a class="mut" href="#acct">Hesap</a></p>';
+    var S = K.S(), h = '<h2>Kristal ile · abonelikler</h2><p class="mut">Bakiyen: <b>' + kc(S.bal) + '</b>' + (K.offline() ? ' · sunucuya bağlanılamadı, son bilinen değer' : '') + ' · <a class="mut" href="#acct">Hesap</a></p>';
     var md = K.mantarCfg().days;
     h += '<h3 class="grp">Mantar Pano</h3>' + (K.mantarCfg().tiers.map(function (t) { return item('k/mantar/' + t.id, '📌', t.name, md + ' gün · kod ile', kc(t.cost), S.bal < t.cost); }).join('') || '<div class="empty">Paket yok.</div>');
     h += '<h3 class="grp">Zamanlayıcı</h3>' + (K.zamanCfg().plans.map(function (p) {
@@ -56,7 +56,7 @@
   }
   function homeCard() {
     var S = K.S();
-    return '<a class="card tap" href="#acct"><div class="row"><h3>Kristal bakiyem</h3><span class="item-price">' + kc(S.bal) + '</span></div><div class="mut">Site ID: ' + esc(S.id) + (S.last && S.last === K.today() ? ' · bugünkü giriş ödülün alındı' : '') + ' · Hesap ve yedek ›</div></a>';
+    return '<a class="card tap" href="#acct"><div class="row"><h3>Kristal bakiyem</h3><b>' + kc(S.bal) + '</b></div><div class="mut">Site ID: ' + esc(S.id) + (S.last && S.last === K.today() ? ' · bugünkü giriş ödülün alındı' : '') + ' · Hesap ve yedek ›</div></a>';
   }
 
   /* ===== Ürün sayfası ve satın alma ===== */
