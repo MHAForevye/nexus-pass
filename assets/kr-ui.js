@@ -4,12 +4,12 @@
 (function () {
   var K = window.KR, $ = function (s) { return document.querySelector(s); };
   var esc = function (v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); };
-  var kc = function (n) { return '◆ ' + (+n || 0).toLocaleString('tr-TR', { maximumFractionDigits: 4 }); };
+  var kc = function (n) { return '<img src="assets/crystal.svg" alt=""> ' + (+n || 0).toLocaleString('tr-TR', { maximumFractionDigits: 4 }); };
   var admOpen = false, lastNo = '', camDraft = '';
 
   /* ===== Liste kartları ===== */
   function item(href, icon, title, sub, right, off) {
-    return '<a class="card tap' + (off ? ' dim' : '') + '" href="#' + href + '"><div class="row"><h3>' + icon + ' ' + esc(title) + '</h3><b>' + esc(right) + '</b></div><div class="mut">' + esc(sub) + '</div></a>';
+    return '<a class="card tap' + (off ? ' dim' : '') + '" href="#' + href + '"><div class="row"><h3>' + icon + ' ' + esc(title) + '</h3><b>' + right + '</b></div><div class="mut">' + esc(sub) + '</div></a>';
   }
   function shop() {
     var S = K.S(), h = '<h2>Kristal ile · abonelikler</h2><p class="mut">Bakiyen: <b>' + kc(S.bal) + '</b>' + (K.offline() ? ' · sunucuya bağlanılamadı, son bilinen değer' : '') + ' · <a class="mut" href="#acct">Hesap</a></p>';

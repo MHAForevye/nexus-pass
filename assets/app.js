@@ -116,7 +116,7 @@ function guest(r,msg){
   const part=r==='discover'?KRUI.shop():r==='mine'?KRUI.codes():r==='history'?KRUI.reqs():KRUI.homeCard()+KRUI.shop();
   app.innerHTML=`<h1>NEXUS PASS</h1><p class="sub">FOREVYE üyeliklerin tek yerde.</p>`+connectCard(msg)+part;
 }
-function paintK(){const s=KR.S();$('#kbal').textContent='◆ '+(+s.bal||0).toLocaleString('tr-TR',{maximumFractionDigits:4})}
+function paintK(){const s=KR.S();$('#kbal').innerHTML='<img src="assets/crystal.svg" alt=""> '+(+s.bal||0).toLocaleString('tr-TR',{maximumFractionDigits:4})}
 async function route(){
   await boot;await Promise.race([KR.ready(),new Promise(r=>setTimeout(r,4000))]);
   const [r,a,b]=(location.hash.slice(1)||'home').split('/');$('#modal').hidden=true;
