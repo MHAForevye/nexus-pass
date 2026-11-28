@@ -1,6 +1,6 @@
 'use strict';
 /* ===== Kristal istemcisi (Forevye Mağaza'dan taşındı: yalnızca abonelikler + Astrophoto Cam) =====
-   Kristal ayrı sunucudadır (Cloudflare Worker + D1, hava reposundaki worker/index.js; adres: config.js → KRISTAL_API_BASE).
+   Kristal ayrı sunucudadır (Cloudflare Worker + D1, hava reposundaki worker/index.js; adres: config.js › KRISTAL_API_BASE).
    Bakiye, fiyat, günlük ödül, satın alma ve kodlar sunucuda; burası yalnızca ister ve gösterir (tarayıcıdaki sayıyı değiştirmek hiçbir şeyi değiştirmez).
    Kristal hesabı (Site ID + gizli anahtar, localStorage) Nexus Pass girişinden bağımsızdır. Kimlik başlıkla gider, çerez yok.
    Mantar Pano (Pro / Sınırsız) ve Zamanlayıcı (Plus / Premium) kodları kristalle alınır; Astrophoto Cam paketleri mail talebiyle teslim edilir. */

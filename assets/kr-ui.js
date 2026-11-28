@@ -4,37 +4,37 @@
 (function () {
   var K = window.KR, $ = function (s) { return document.querySelector(s); };
   var esc = function (v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); };
-  var kc = function (n) { return '<img src="assets/crystal.svg" alt=""> ' + (+n || 0).toLocaleString('tr-TR', { maximumFractionDigits: 4 }); };
+  var kc = function (n) { return '<span class="kamt"><img src="assets/crystal.svg" alt="">' + (+n || 0).toLocaleString('tr-TR', { maximumFractionDigits: 4 }) + '</span>'; };
   var admOpen = false, lastNo = '', camDraft = '';
 
   /* ===== Liste kartları ===== */
   function item(href, icon, title, sub, right, off) {
-    return '<a class="card tap' + (off ? ' dim' : '') + '" href="#' + href + '"><div class="row"><h3>' + icon + ' ' + esc(title) + '</h3><b>' + right + '</b></div><div class="mut">' + esc(sub) + '</div></a>';
+    return '<a class="card tap item' + (off ? ' dim' : '') + '" href="#' + href + '"><span class="item-ic">' + icon + '</span><div class="item-body"><div class="row"><h3>' + esc(title) + '</h3><b>' + right + '</b></div><div class="mut">' + esc(sub) + '</div></div></a>';
   }
   function shop() {
-    var S = K.S(), h = '<h2>Kristal ile · abonelikler</h2><p class="mut">Bakiyen: <b>' + kc(S.bal) + '</b>' + (K.offline() ? ' · sunucuya bağlanılamadı, son bilinen değer' : '') + ' · <a class="mut" href="#acct">Hesap</a></p>';
+    var S = K.S(), h = '<div class="section-head"><h2>Kristal ile abonelikler</h2><a class="text-link" href="#acct">Hesap' + IC.chevR + '</a></div><p class="mut lead">Bakiyen: <b>' + kc(S.bal) + '</b>' + (K.offline() ? '. Sunucuya bağlanılamadı, son bilinen değer gösteriliyor.' : '') + '</p>';
     var md = K.mantarCfg().days;
-    h += '<h3 class="grp">Mantar Pano</h3>' + (K.mantarCfg().tiers.map(function (t) { return item('k/mantar/' + t.id, '📌', t.name, md + ' gün · kod ile', kc(t.cost), S.bal < t.cost); }).join('') || '<div class="empty">Paket yok.</div>');
+    h += '<h3 class="grp">Mantar Pano</h3>' + (K.mantarCfg().tiers.map(function (t) { return item('k/mantar/' + t.id, IC.board, t.name, md + ' gün · kod ile', kc(t.cost), S.bal < t.cost); }).join('') || '<div class="empty">Paket yok.</div>');
     h += '<h3 class="grp">Zamanlayıcı</h3>' + (K.zamanCfg().plans.map(function (p) {
       var t = K.zTier(p.tier), pct = p.days === 7 ? K.zSave(p.tier) : 0;
-      return item('k/zaman/' + p.tier + '-' + p.days, '⏱', (t ? t.name : p.tier) + ' · ' + p.days + ' gün', pct > 0 ? '%' + pct + ' tasarruf · kod ile' : 'kod ile', kc(p.cost), S.bal < p.cost);
+      return item('k/zaman/' + p.tier + '-' + p.days, IC.timer, (t ? t.name : p.tier) + ' · ' + p.days + ' gün', pct > 0 ? '%' + pct + ' tasarruf · kod ile' : 'kod ile', kc(p.cost), S.bal < p.cost);
     }).join('') || '<div class="empty">Paket yok.</div>');
     var rc = K.retroCfg();
     h += '<h3 class="grp">Retro Camera</h3>' + (rc.plans.map(function (p) {
       var t = K.rTier(p.tier), pct = p.days === 7 ? K.rSave(p.tier) : 0;
-      return item('k/retro/' + p.tier + '-' + p.days, '📷', (t ? t.name : p.tier) + ' · ' + p.days + ' gün', pct > 0 ? '%' + pct + ' tasarruf · kod ile' : 'kod ile', kc(p.cost), S.bal < p.cost);
+      return item('k/retro/' + p.tier + '-' + p.days, IC.camera, (t ? t.name : p.tier) + ' · ' + p.days + ' gün', pct > 0 ? '%' + pct + ' tasarruf · kod ile' : 'kod ile', kc(p.cost), S.bal < p.cost);
     }).join('') || '<div class="empty">Paket yok.</div>');
-    h += '<h3 class="grp">' + esc(K.app) + '</h3>' + K.cfg().packs.map(function (pk, i) { return item('k/pack/' + i, '📷', pk.name, 'aktivasyon hakkı · mail ile teslim', kc(pk.cost), S.bal < pk.cost); }).join('');
+    h += '<h3 class="grp">' + esc(K.app) + '</h3>' + K.cfg().packs.map(function (pk, i) { return item('k/pack/' + i, IC.star, pk.name, 'aktivasyon hakkı · mail ile teslim', kc(pk.cost), S.bal < pk.cost); }).join('');
     return h;
   }
   function codeRow(p, label, kind) {
     var st = K.passState(p);
-    return '<div class="card"><div class="row"><h3>' + esc(label) + '</h3><span class="badge ' + (st.cls === 'on' ? 'ok' : st.cls === 'old' ? 'off' : 'warn') + '">' + (st.cls === 'on' ? '✓ Aktif' : st.cls === 'old' ? '◷ Doldu' : '● Hazır') + '</span></div>' +
-      '<div class="code">' + esc(K.fmtCode(p.c)) + '</div><div class="mut">' + esc(st.text) + '</div><button class="btn sm" data-act="copy" data-v="' + esc(K.fmtCode(p.c)) + '">Kodu kopyala</button>' + openLink(kind, p.c, 'btn sm') + '</div>';
+    return '<div class="card"><div class="row"><h3>' + esc(label) + '</h3><span class="badge ' + (st.cls === 'on' ? 'ok' : st.cls === 'old' ? 'off' : 'warn') + '">' + (st.cls === 'on' ? IC.check + 'Aktif' : st.cls === 'old' ? IC.clock + 'Süresi doldu' : IC.dot + 'Hazır') + '</span></div>' +
+      '<div class="code">' + esc(K.fmtCode(p.c)) + '</div><div class="mut">' + esc(st.text) + '</div><button class="btn sm" data-act="copy" data-v="' + esc(K.fmtCode(p.c)) + '">' + IC.copy + 'Kodu kopyala</button>' + openLink(kind, p.c, 'btn sm') + '</div>';
   }
   /* Mantar Pano, Zamanlayıcı, Retro Camera: kod bağlantıyla taşınır, uygulama kendiliğinden etkinleştirir (yapıştırmaya gerek yok) */
   var APPNAME = { mantar: 'Mantar Pano', zaman: 'Zamanlayıcı', retro: 'Retro Camera' };
-  function openLink(kind, code, cls) { var u = K.appUrl(kind, code); return u ? ' <a class="' + cls + '" href="' + esc(u) + '" target="_blank" rel="noopener">' + esc(APPNAME[kind]) + '’da aç</a>' : ''; }
+  function openLink(kind, code, cls) { var u = K.appUrl(kind, code); return u ? ' <a class="' + cls + '" href="' + esc(u) + '" target="_blank" rel="noopener">' + esc(APPNAME[kind]) + '’da aç' + IC.ext + '</a>' : ''; }
   function codes() {
     var S = K.S(), h = '';
     if (S.passes.length) h += '<h2>Mantar Pano kodlarım</h2><p class="mut">Kodu Mantar Pano’da Premium kodu alanına yapıştır. Süre, kodu ilk kullandığın anda başlar.</p>' + S.passes.slice().reverse().map(function (p) { var t = K.mTier(p.tier); return codeRow(p, (t ? t.name : 'Mantar Pano ' + p.tier) + ' · ' + (p.days || K.mantarCfg().days) + ' gün', 'mantar'); }).join('');
@@ -46,7 +46,7 @@
     var S = K.S(), h = '', pr = K.pendingReq();
     if (pr) h += pending(pr);
     if (S.reqs.length) h += '<h2>' + esc(K.app) + ' talepleri</h2>' + S.reqs.slice(-5).reverse().map(function (r) {
-      return '<div class="card"><div class="row"><h3>' + esc(r.pack) + '</h3><span class="badge ' + (r.status === 'done' ? 'ok' : 'warn') + '">' + (r.status === 'done' ? '✓ Tamamlandı' : '● Bekliyor') + '</span></div><div class="mut">' + esc(r.t) + ' · ' + kc(r.cost) + ' · #' + esc(r.no) + '</div></div>';
+      return '<div class="card"><div class="row"><h3>' + esc(r.pack) + '</h3><span class="badge ' + (r.status === 'done' ? 'ok' : 'warn') + '">' + (r.status === 'done' ? IC.check + 'Tamamlandı' : IC.dot + 'Bekliyor') + '</span></div><div class="mut">' + esc(r.t) + ' · ' + kc(r.cost) + ' · #' + esc(r.no) + '</div></div>';
     }).join('');
     return h;
   }
@@ -56,13 +56,13 @@
   }
   function homeCard() {
     var S = K.S();
-    return '<a class="card tap" href="#acct"><div class="row"><h3>Kristal bakiyem</h3><b>' + kc(S.bal) + '</b></div><div class="mut">Site ID: ' + esc(S.id) + (S.last && S.last === K.today() ? ' · bugünkü giriş ödülün alındı' : '') + ' · Hesap ve yedek ›</div></a>';
+    return '<a class="card tap" href="#acct"><div class="row"><h3>Kristal hesabım</h3><b>' + kc(S.bal) + '</b></div><div class="mut">Site ID: ' + esc(S.id) + (S.last && S.last === K.today() ? ' · bugünkü giriş ödülün alındı' : '') + '</div></a>';
   }
 
   /* ===== Ürün sayfası ve satın alma ===== */
   function need(cost) { var S = K.S(); return S.bal >= cost ? '' : '<p class="err">Yetersiz kristal · yaklaşık ' + K.daysToAfford(cost - S.bal) + ' gün daha (seri ödülü hesaba katılmadan).</p>'; }
   function detail(kind, id) {
-    var S = K.S(), back = '<a href="#discover" class="mut">‹ Keşfet</a>';
+    var S = K.S(), back = '<a href="#discover" class="back">' + IC.chevL + 'Keşfet</a>';
     if (kind === 'mantar') {
       var t = K.mTier(id); if (!t) return back + '<div class="empty">Paket bulunamadı.</div>';
       return back + '<h1>' + esc(t.name) + '</h1><div class="card"><p>' + K.mantarCfg().days + ' günlük ' + esc(t.short) + ' erişimi. Alınca sana bir kod verilir; kodu Mantar Pano’da gir, süre ilk kullandığın anda başlar. Mantar Pano’nun şimdiki özellikleri zaten ücretsiz kalır; bu paket yeni özellikleri açar.</p>' + tbl(t.cost, S.bal) + need(t.cost) + '</div>' + buyBtn('mantar', t.id, t.cost, '');
@@ -89,7 +89,7 @@
 
   function codeResult(kind, p, name, where) {
     var code = K.fmtCode(p.c);
-    return '<h1 class="ok">✓ Kodun hazır</h1><div class="card"><b>' + esc(name) + '</b><div class="code">' + esc(code) + '</div><p class="mut">' + (openLink(kind, p.c, '') ? 'Aşağıdaki düğme uygulamayı açar ve kodu kendiliğinden girer. ' : '') + 'Elle girmek istersen kodu şuraya yapıştır: ' + esc(where) + '. ' + esc(p.days) + ' günlük süre, kodu ilk kullandığın anda başlar. Kod “Üyeliklerim” sayfasında da durur.</p>' + (openLink(kind, p.c, 'btn primary') ? openLink(kind, p.c, 'btn primary').trim() + '<button class="btn" data-act="copy" data-v="' + esc(code) + '">Kodu kopyala</button>' : '<button class="btn primary" data-act="copy" data-v="' + esc(code) + '">Kodu kopyala</button>') + '</div><a class="btn" href="#mine">Üyeliklerime git</a>';
+    return '<div class="result ok">' + IC.check + '</div><h1>Kodun hazır</h1><div class="card"><b>' + esc(name) + '</b><div class="code">' + esc(code) + '</div><p class="mut">' + (openLink(kind, p.c, '') ? 'Aşağıdaki düğme uygulamayı açar ve kodu kendiliğinden girer. ' : '') + 'Elle girmek istersen kodu şuraya yapıştır: ' + esc(where) + '. ' + esc(p.days) + ' günlük süre, kodu ilk kullandığın anda başlar. Kod “Üyeliklerim” sayfasında da durur.</p>' + (openLink(kind, p.c, 'btn primary') ? openLink(kind, p.c, 'btn primary').trim() + '<button class="btn" data-act="copy" data-v="' + esc(code) + '">Kodu kopyala</button>' : '<button class="btn primary" data-act="copy" data-v="' + esc(code) + '">Kodu kopyala</button>') + '</div><a class="btn" href="#mine">Üyeliklerime git</a>';
   }
   function buy(kind, id, btn) {
     var S = K.S(), label, run, show;
@@ -99,15 +99,17 @@
     else { var pk = K.cfg().packs[+id]; if (!pk) return; var cam = ($('#camId') ? $('#camId').value : '').trim(); camDraft = cam;
       if (cam.length < 3) { if ($('#camId')) $('#camId').focus(); return K.toast('Önce ' + K.app + ' ID’ni yaz.'); }
       label = pk.name + ' için ' + pk.cost + ' kristal'; run = function () { return K.buyPack(+id, cam); };
-      show = function (d) { setTimeout(function () { K.openMail(d.req); }, 50); return '<h1 class="ok">✓ Talebin alındı</h1><div class="card"><p>' + esc(pk.name) + ' · Talep no ' + esc(d.req.no) + '. Mail taslağı açıldı; mail açılmadıysa aşağıdaki düğmeleri kullan. Kod, doğrulamadan sonra mail ile gönderilir.</p></div>' + pending(d.req) + '<a class="btn" href="#history">Taleplerime git</a>'; }; }
-    if (!confirm(label + ' harcanacak. Devam edilsin mi?')) return;
-    btn.disabled = true; btn.textContent = 'İşleniyor…';
-    run().then(function (d) { $('#app').innerHTML = show(d); window.scrollTo(0, 0); }, function (e) { btn.disabled = false; btn.textContent = 'Kristal ile al'; K.toast(e.message); window.dispatchEvent(new Event('kr:refresh')); });
+      show = function (d) { setTimeout(function () { K.openMail(d.req); }, 50); return '<div class="result ok">' + IC.check + '</div><h1>Talebin alındı</h1><div class="card"><p>' + esc(pk.name) + ' · Talep no ' + esc(d.req.no) + '. Mail taslağı açıldı; mail açılmadıysa aşağıdaki düğmeleri kullan. Kod, doğrulamadan sonra mail ile gönderilir.</p></div>' + pending(d.req) + '<a class="btn" href="#history">Taleplerime git</a>'; }; }
+    UI.confirm({ title: 'Satın alma onayı', body: label + ' harcanacak. Onay vermeden kristalin düşülmez.', ok: 'Kristal ile al' }).then(function (yes) {
+      if (!yes) return;
+      btn.disabled = true; btn.textContent = 'İşleniyor…';
+      run().then(function (d) { $('#app').innerHTML = show(d); window.scrollTo(0, 0); }, function (e) { btn.disabled = false; btn.textContent = 'Kristal ile al'; K.toast(e.message); window.dispatchEvent(new Event('kr:refresh')); });
+    });
   }
 
   /* ===== Hesap sayfası ===== */
   function acct() {
-    var S = K.S(), h = '<a href="#home" class="mut">‹ Ana Sayfa</a><h1>Kristal hesabım</h1><div class="card"><div class="row"><div><div class="mut">Kristal bakiyen</div><div class="big">' + kc(S.bal) + '</div></div><div style="text-align:right"><div class="mut">Site ID’n</div><div class="big">' + esc(S.id) + '</div><button class="btn sm" data-act="copy" data-v="' + esc(S.id) + '">Kopyala</button></div></div>' +
+    var S = K.S(), h = '<a href="#home" class="back">' + IC.chevL + 'Genel bakış</a><h1>Kristal hesabım</h1><div class="card"><div class="row"><div><div class="mut">Kristal bakiyen</div><div class="big">' + kc(S.bal) + '</div></div><div style="text-align:right"><div class="mut">Site ID’n</div><div class="big">' + esc(S.id) + '</div><button class="btn sm" data-act="copy" data-v="' + esc(S.id) + '">Kopyala</button></div></div>' +
       '<p class="mut">' + (K.offline() ? 'Sunucuya bağlanılamadı, son bilinen bakiye gösteriliyor. ' : '') + (S.last && S.last === K.today() ? 'Bugünkü giriş ödülün alındı. ' : '') + 'Toplam giriş günü: ' + esc(S.days) + '. Günlük ödül, Mağaza’yı ya da hava uygulamasını günde bir kez açınca verilir (iki yerde aynı hesap).</p></div>';
     if (K.oldCreds()) h += '<div class="card"><button class="btn" data-act="restoreold">Önceki hesabımı geri yükle</button><p class="mut">Bu cihazda daha önce başka bir hesap kullanılmıştı; geri yüklersen onun bakiyesi geri gelir.</p></div>';
     h += '<h2>Hesap yedeği</h2><div class="card"><p class="mut">Başka cihazda ya da tarayıcıda aynı hesabı açmak için yedeği kopyala, orada aşağıya yapıştır. Hava uygulamasının ve Mağaza’nın yedek metni de çalışır. Yedek metni hesabı açar, kimseyle paylaşma.</p><button class="btn" data-act="backcopy">Yedeği kopyala</button>' +
@@ -166,5 +168,5 @@
     if (ev.target.id !== 'camId') return;
     if (K.isOwnerWord(ev.target.value)) { ev.target.value = ''; admOpen = true; location.hash = '#acct'; window.dispatchEvent(new Event('kr:refresh')); }
   });
-  window.KRUI = { shop: shop, codes: codes, reqs: reqs, homeCard: homeCard, detail: detail, acct: acct };
+  window.KRUI = { amount: kc, shop: shop, codes: codes, reqs: reqs, homeCard: homeCard, detail: detail, acct: acct };
 })();

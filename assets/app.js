@@ -49,23 +49,39 @@ const fm=v=>(v/100).toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFract
 const fmt=t=>new Date(t).toLocaleString('tr-TR',{dateStyle:'medium',timeStyle:'short'});
 const dur=s=>s>=86400&&s%86400===0?`${s/86400} gün`:`${Math.round(s/3600)} saat`;
 const left=t=>{let m=Math.max(0,Math.floor((t-now())/6e4)),d=Math.floor(m/1440),h=Math.floor(m%1440/60);return d?`${d} gün ${h} sa kaldı`:h?`${h} sa ${m%60} dk kaldı`:`${m} dk kaldı`};
-const badge=s=>({active:'<span class="badge ok">✓ Aktif</span>',expired:'<span class="badge off">◷ Süresi doldu</span>',success:'<span class="badge ok">✓ Başarılı</span>',failed:'<span class="badge err">✕ Başarısız</span>',cancelled:'<span class="badge warn">⊘ İptal</span>'})[s]||'';
+const badge=s=>({active:`<span class="badge ok">${IC.check}Aktif</span>`,expired:`<span class="badge off">${IC.clock}Süresi doldu</span>`,success:`<span class="badge ok">${IC.check}Başarılı</span>`,failed:`<span class="badge err">${IC.x}Başarısız</span>`,cancelled:`<span class="badge warn">${IC.ban}İptal</span>`})[s]||'';
 const skel=()=>app.innerHTML='<div class="skel"></div><div class="skel"></div><div class="skel"></div>';
 const retry=fn=>{app.innerHTML=`<div class="empty">Bağlantı kurulamadı.<br><br><button class="btn" id="rt">Tekrar dene</button></div>`;$('#rt').onclick=fn};
 const entCard=e=>`<a class="card tap" href="#ent/${encodeURIComponent(e.id)}"><div class="row"><h3>${esc(e.product.app)}</h3>${badge(e.status)}</div><div>${esc(e.product.name)}</div><div class="mut">${e.status==='active'?left(e.expires):e.status==='cancelled'?'Kapatıldı (iade)':'Bitiş: '+fmt(e.expires)}</div></a>`;
-const prodCard=(p,owned)=>`<a class="card tap" href="#p/${encodeURIComponent(p.id)}"><div class="row"><h3>${esc(p.app)}</h3><b>${fm(p.price)}</b></div><div>${esc(p.name)} · ${dur(p.dur)}</div><div class="mut">${esc(p.desc)}</div>${owned?'<div class="ok" style="font-size:13px;margin-top:4px">✓ Aktif üyeliğin var</div>':''}</a>`;
+const prodCard=(p,owned)=>`<a class="card tap" href="#p/${encodeURIComponent(p.id)}"><div class="row"><h3>${esc(p.app)}</h3><b>${fm(p.price)}</b></div><div>${esc(p.name)} · ${dur(p.dur)}</div><div class="mut">${esc(p.desc)}</div>${owned?`<div class="ok note">${IC.check}Aktif üyeliğin var</div>`:''}</a>`;
 const histRow=x=>`<div class="card"><div class="row"><h3>${esc(x.app)}</h3>${badge(x.status)}</div><div>${esc(x.name)}</div><div class="mut">${fmt(x.at)} · ${fm(x.status==='success'?x.price:0)} · ${esc(x.id)}</div></div>`;
 
 async function refreshBal(){const m=await API.me();$('#bal').textContent=fm(m.balance);return m}
 
 const routes={
- async home(){skel();const m=await refreshBal(),act=m.entitlements.filter(e=>e.status==='active').sort((a,b)=>a.expires-b.expires),h=await API.purchases(0,3);
-  app.innerHTML=`<h1>NEXUS PASS</h1><p class="sub">FOREVYE üyeliklerin tek yerde.</p>
-  <div class="card"><div class="row"><div><b>${act.length}</b> aktif üyelik</div><div class="mut">${act.length?'En yakın bitiş: '+fmt(act[0].expires):''}</div></div>${act.length?'':'<p class="mut">Henüz aktif bir üyeliğin yok.</p>'}<a class="btn primary" href="#discover">Üyelikleri Keşfet</a></div>
-  ${KRUI.homeCard()}
-  <h2>Son hareketler</h2>${h.items.length?h.items.map(histRow).join('')+'<a class="btn" href="#history">Tüm geçmiş</a>':'<div class="empty">Henüz hareket yok.</div>'}
-  <p style="text-align:center"><button class="link" id="rs">Oturumu kapat</button></p>`;
-  $('#rs').onclick=()=>{if(confirm('Bu oturum kapatılsın mı?')){API.logout();route()}}},
+ async home(){skel();const m=await refreshBal(),act=m.entitlements.filter(e=>e.status==='active').sort((a,b)=>a.expires-b.expires),h=await API.purchases(0,3),K=KR.S();
+  app.innerHTML=`<header class="page-head"><h1>Genel bakış</h1><p class="sub">Üyeliklerin, bakiyelerin ve son hareketlerin.</p></header>
+  <div class="metric-grid">
+   <a class="card metric tap" href="#mine"><span class="metric-k">Aktif üyelik</span><b class="metric-v">${act.length}</b><span class="mut">${act.length?'En yakın bitiş: '+fmt(act[0].expires):'Henüz aktif üyelik yok'}</span></a>
+   <div class="card metric"><span class="metric-k">FN bakiyesi</span><b class="metric-v">${fm(m.balance)}</b><span class="mut">Nexus hesabın</span></div>
+   <a class="card metric tap" href="#acct"><span class="metric-k">Kristal bakiyesi</span><b class="metric-v">${KRUI.amount(K.bal)}</b><span class="mut">Site ID: ${esc(K.id)}</span></a>
+  </div>
+  ${act.length?'':`<div class="card"><b>Henüz aktif bir üyeliğin yok</b><p class="mut">Paketleri inceleyip FN ile üyelik alabilirsin.</p><a class="btn primary" href="#discover">Üyelikleri keşfet</a></div>`}
+  <div class="section-head"><h2>Son hareketler</h2><a class="text-link" href="#history">Tümü${IC.chevR}</a></div>
+  ${h.items.length?h.items.map(histRow).join(''):'<div class="empty">Henüz hareket yok.</div>'}
+  <p class="center"><button class="link" id="rs" type="button">${IC.logout}Oturumu kapat</button></p>`;
+  $('#rs').onclick=async()=>{if(await UI.confirm({title:'Oturum kapatılsın mı?',body:'Nexus Pass’i yeniden açmak için Nexus’tan giriş yapman gerekir.',ok:'Oturumu kapat'})){API.logout();route()}}},
+ async systems(){
+  const nx=base()&&tok,K=KR.S(),link=(u,l)=>u&&/^https:\/\//.test(u)?`<a class="btn sm" href="${esc(u)}" target="_blank" rel="noopener">${l}${IC.ext}</a>`:'';
+  const c=CFG,card=(ic,name,desc,st,act)=>`<div class="card system-card"><div class="system-top"><span class="system-icon">${ic}</span><div><h3>${esc(name)}</h3><div class="mut">${esc(desc)}</div></div></div><div class="system-bottom"><span class="system-state ${st[0]}"><i></i>${esc(st[1])}</span>${act||''}</div></div>`;
+  const nxu=CFG.NEXUS_URL?CFG.NEXUS_URL.replace(/\/+$/,'')+'/#/pass':'';
+  app.innerHTML=`<header class="page-head"><h1>Bağlı sistemler</h1><p class="sub">Forevye uygulamaları ve bu hesapla çalışan servisler.</p></header><div class="systems-grid">`+
+   card(IC.shield,'Nexus','FN bakiyesi ve Nexus Pass üyelikleri',nx?['on','Oturum açık']:['off','Giriş bekleniyor'],link(nxu,'Nexus’u aç'))+
+   card('<img class="ic-img" src="assets/crystal.svg" alt="">','Kristal hesabı','Kristal bakiyesi, kodlar ve hesap yedeği',KR.offline()?['off','Sunucuya ulaşılamadı']:['on','Bağlı'],'<a class="btn sm" href="#acct">Hesabı aç</a>')+
+   card(IC.board,'Mantar Pano','Pro ve Sınırsız erişim kodları',c.MANTAR_URL?['on','Adres tanımlı']:['off','Adres tanımlı değil'],link(c.MANTAR_URL,'Uygulamayı aç'))+
+   card(IC.timer,'Zamanlayıcı','Plus ve Premium erişim kodları',c.ZAMAN_URL?['on','Adres tanımlı']:['off','Adres tanımlı değil'],link(c.ZAMAN_URL,'Uygulamayı aç'))+
+   card(IC.camera,'Retro Camera','Premium erişim kodları',c.RETRO_URL?['on','Adres tanımlı']:['off','Adres tanımlı değil'],link(c.RETRO_URL,'Uygulamayı aç'))+
+   card(IC.star,KR.app,'Aktivasyon paketleri, mail ile teslim',['on','Paket akışı açık'],'<a class="btn sm" href="#discover">Paketleri gör</a>')+`</div>`},
  async mine(){skel();const m=await refreshBal(),a=m.entitlements.filter(e=>e.status==='active'),x=m.entitlements.filter(e=>e.status!=='active');
   app.innerHTML=`<h1>Üyeliklerim</h1>${a.length?a.map(entCard).join(''):'<div class="empty">Henüz aktif bir üyeliğin yok.<br><br><a class="btn primary" href="#discover">Üyelikleri Keşfet</a></div>'}${x.length?'<h2>Süresi dolanlar</h2>'+x.map(entCard).join(''):''}${KRUI.codes()}`},
  async discover(){skel();const [m,l]=await Promise.all([refreshBal(),API.products()]);
@@ -74,15 +90,15 @@ const routes={
   app.innerHTML='<h1>Üyelikleri Keşfet</h1><h2>Nexus Pass · FN ile</h2>'+apps.map(a=>`<h3 class="grp">${esc(a)}</h3>`+l.filter(p=>p.app===a).map(p=>prodCard(p,act.has(p.id))).join('')).join('')+KRUI.shop()},
  async ent(id){skel();const m=await refreshBal(),e=m.entitlements.find(x=>x.id===id);
   if(!e){app.innerHTML='<div class="empty">Üyelik bulunamadı.</div>';return}
-  app.innerHTML=`<a href="#mine" class="mut">‹ Üyeliklerim</a><h1>${esc(e.product.app)}</h1><p>${esc(e.product.name)} ${badge(e.status)}</p><div class="card"><table><tr><td>Başlangıç</td><td>${fmt(e.starts)}</td></tr><tr><td>Bitiş</td><td>${fmt(e.expires)}</td></tr><tr><td>Kalan süre</td><td>${e.status==='active'?left(e.expires):e.status==='cancelled'?'İade edildi / kapatıldı':'Süresi doldu'}</td></tr><tr><td>Harcanan</td><td>${fm(e.snap.price)}</td></tr><tr><td>İşlem no</td><td>${esc(e.snap.id)}</td></tr></table><p class="mut">Otomatik yenileme yok. Süre bitince içeriklerin silinmez, yalnızca Premium özellikler kapanır.</p></div>`},
+  app.innerHTML=`<a href="#mine" class="back">${IC.chevL}Üyeliklerim</a><h1>${esc(e.product.app)}</h1><p>${esc(e.product.name)} ${badge(e.status)}</p><div class="card"><table><tr><td>Başlangıç</td><td>${fmt(e.starts)}</td></tr><tr><td>Bitiş</td><td>${fmt(e.expires)}</td></tr><tr><td>Kalan süre</td><td>${e.status==='active'?left(e.expires):e.status==='cancelled'?'İade edildi / kapatıldı':'Süresi doldu'}</td></tr><tr><td>Harcanan</td><td>${fm(e.snap.price)}</td></tr><tr><td>İşlem no</td><td>${esc(e.snap.id)}</td></tr></table><p class="mut">Otomatik yenileme yok. Süre bitince içeriklerin silinmez, yalnızca Premium özellikler kapanır.</p></div>`},
  async p(id){skel();const [m,p]=await Promise.all([refreshBal(),API.product(id)]);
   if(!p||p.status!=='on'){app.innerHTML='<div class="empty">Bu paket artık satışta değil.<br><br><a class="btn" href="#discover">Kataloğa dön</a></div>';return}
   const owned=m.entitlements.find(e=>e.pid===id&&e.status==='active');
-  app.innerHTML=`<a href="#discover" class="mut">‹ Keşfet</a><h1>${esc(p.app)}</h1><p>${esc(p.name)}</p><div class="card"><b>Premium ile açılanlar</b><ul class="feat">${(p.features||[]).map(f=>`<li>${esc(f)}</li>`).join('')}</ul><table><tr><td>Süre</td><td>${dur(p.dur)}</td></tr><tr><td>Fiyat</td><td>${fm(p.price)}</td></tr><tr><td>Tahmini bakiye</td><td>${fm(m.balance-p.price)}</td></tr></table><p class="mut">Tek seferlik FN harcaması. Otomatik yenileme yok.</p></div>
-  ${owned?`<div class="card ok">✓ Bu üyelik aktif · ${left(owned.expires)}</div>`:''}<button class="btn primary" id="buy" ${owned?'disabled':''}>FN ile Satın Al</button>`;
+  app.innerHTML=`<a href="#discover" class="back">${IC.chevL}Keşfet</a><h1>${esc(p.app)}</h1><p>${esc(p.name)}</p><div class="card"><b>Premium ile açılanlar</b><ul class="feat">${(p.features||[]).map(f=>`<li>${esc(f)}</li>`).join('')}</ul><table><tr><td>Süre</td><td>${dur(p.dur)}</td></tr><tr><td>Fiyat</td><td>${fm(p.price)}</td></tr><tr><td>Tahmini bakiye</td><td>${fm(m.balance-p.price)}</td></tr></table><p class="mut">Tek seferlik FN harcaması. Otomatik yenileme yok.</p></div>
+  ${owned?`<div class="card ok note-card">${IC.check}Bu üyelik aktif · ${left(owned.expires)}</div>`:''}<button class="btn primary" id="buy" ${owned?'disabled':''}>FN ile Satın Al</button>`;
   $('#buy').onclick=()=>confirmBuy(p,m.balance)},
  async history(page=0){skel();await refreshBal();const h=await API.purchases(page);
-  app.innerHTML='<h1>Üyelik geçmişi</h1>'+(h.items.length?h.items.map(histRow).join(''):'<div class="empty">Henüz kayıt yok.</div>')+`<div class="row">${page?'<button class="btn" id="pv">‹ Önceki</button>':''}${h.more?'<button class="btn" id="nx">Sonraki ›</button>':''}</div>`+KRUI.reqs();
+  app.innerHTML='<h1>Üyelik geçmişi</h1>'+(h.items.length?h.items.map(histRow).join(''):'<div class="empty">Henüz kayıt yok.</div>')+`<div class="row">${page?`<button class="btn" id="pv">${IC.chevL}Önceki</button>`:''}${h.more?`<button class="btn" id="nx">Sonraki${IC.chevR}</button>`:''}</div>`+KRUI.reqs();
   if($('#pv'))$('#pv').onclick=()=>routes.history(page-1);if($('#nx'))$('#nx').onclick=()=>routes.history(page+1)}
 };
 
@@ -94,34 +110,37 @@ function confirmBuy(p,bal){
   $('#ok').onclick=async()=>{const b=$('#ok');b.disabled=true;b.textContent='İşleniyor…';
    try{const r=await API.purchase(p.id,idem);m.hidden=true;result(r,p)}catch(e){b.disabled=false;b.textContent='Satın Al';
     if(e.message==='AUTH'){m.hidden=true;route();return}
-    if(e.message==='RATE')alert('Çok fazla deneme. Birkaç dakika sonra tekrar dene.');
-    else if(e.status>=400&&e.status<500)alert(e.message); // sunucu kesin reddetti, bakiyeden düşülmedi
-    else alert('İşlem durumu belirsiz. Tekrar denemeden önce Geçmiş ekranını kontrol et.')}};
+    if(e.message==='RATE')KR.toast('Çok fazla deneme. Birkaç dakika sonra tekrar dene.');
+    else if(e.status>=400&&e.status<500)KR.toast(e.message); // sunucu kesin reddetti, bakiyeden düşülmedi
+    else KR.toast('İşlem durumu belirsiz. Tekrar denemeden önce Geçmiş ekranını kontrol et.')}};
 }
 function result(r,p){
   if(r.ok){const x=r.purchase,e=r.entitlement;refreshBal().catch(()=>{});
-   app.innerHTML=`<h1 class="ok">✓ Premium üyeliğin etkinleştirildi.</h1><div class="card"><table><tr><td>İşlem referansı</td><td>${esc(x.id)}</td></tr><tr><td>Paket</td><td>${esc(x.app)} · ${esc(x.name)}</td></tr><tr><td>Süre</td><td>${dur(x.dur)}</td></tr>${e?`<tr><td>Başlangıç</td><td>${fmt(e.starts)}</td></tr><tr><td>Bitiş</td><td>${fmt(e.expires)}</td></tr>`:''}</table></div><a class="btn primary" href="#mine">Üyeliklerime git</a>`;return}
+   app.innerHTML=`<div class="result ok">${IC.check}</div><h1>Premium üyeliğin etkinleştirildi</h1><div class="card"><table><tr><td>İşlem referansı</td><td>${esc(x.id)}</td></tr><tr><td>Paket</td><td>${esc(x.app)} · ${esc(x.name)}</td></tr><tr><td>Süre</td><td>${dur(x.dur)}</td></tr>${e?`<tr><td>Başlangıç</td><td>${fmt(e.starts)}</td></tr><tr><td>Bitiş</td><td>${fmt(e.expires)}</td></tr>`:''}</table></div><a class="btn primary" href="#mine">Üyeliklerime git</a>`;return}
   const msg={insufficient:`Bu üyelik için yeterli FN bakiyen bulunmuyor. Bakiye: ${fm(r.balance)}, eksik: ${fm(r.missing)}.`,unavailable:'Paket artık satışta değil. Katalog yenilenecek.',already_active:'Bu paket için zaten aktif bir üyeliğin var.'}[r.code]||'İşlem tamamlanmadı.';
-  app.innerHTML=`<h1 class="err">✕ İşlem tamamlanmadı</h1><div class="card">${msg}<p class="mut">Bakiyenden düşülmedi.</p></div><a class="btn primary" href="#discover">Kataloğa dön</a>`;
+  app.innerHTML=`<div class="result err">${IC.x}</div><h1>İşlem tamamlanmadı</h1><div class="card">${msg}<p class="mut">Bakiyenden düşülmedi.</p></div><a class="btn primary" href="#discover">Kataloğa dön</a>`;
 }
 
 function connectCard(msg){
   const nx=CFG.NEXUS_URL?CFG.NEXUS_URL.replace(/\/+$/,'')+'/#/pass':'';
-  return `${msg?`<div class="card err">${esc(msg)}</div>`:''}<div class="card"><b>Nexus ile giriş</b><p class="mut">Nexus Pass üyelikleri Nexus hesabınla çalışır ve FN bakiyenle alınır. Nexus'a girip <b>İşlemler → Nexus Pass</b> düğmesine bas; buraya otomatik giriş yapılır. Kristalle alınan abonelikler (Mantar Pano, Zamanlayıcı, Astrophoto Cam) için Nexus girişi gerekmez.</p>${nx?`<a class="btn primary" href="${nx}">Nexus'u aç</a>`:'<p class="mut">Nexus adresi ayarlı değil (assets/config.js → NEXUS_URL).</p>'}</div>`;
+  return `${msg?`<div class="card err">${esc(msg)}</div>`:''}<div class="card"><b>Nexus ile giriş</b><p class="mut">Nexus Pass üyelikleri Nexus hesabınla çalışır ve FN bakiyenle alınır. Nexus'a girip <b>İşlemler › Nexus Pass</b> düğmesine bas; buraya otomatik giriş yapılır. Kristalle alınan abonelikler (Mantar Pano, Zamanlayıcı, Astrophoto Cam) için Nexus girişi gerekmez.</p>${nx?`<a class="btn primary" href="${nx}">Nexus'u aç</a>`:'<p class="mut">Nexus adresi ayarlı değil (assets/config.js → NEXUS_URL).</p>'}</div>`;
 }
-function connectScreen(msg){$('#bal').textContent='';app.innerHTML=`<h1>NEXUS PASS</h1><p class="sub">FOREVYE üyeliklerin tek yerde.</p>`+connectCard(msg)}
+function connectScreen(msg){$('#bal').textContent='';app.innerHTML=`<h1>Nexus Pass</h1><p class="sub">Forevye üyeliklerin tek yerde.</p>`+connectCard(msg)}
 /* Nexus girişi yokken: kristalle alınan abonelikler yine çalışır */
 function guest(r,msg){
   $('#bal').textContent='';
   const part=r==='discover'?KRUI.shop():r==='mine'?KRUI.codes():r==='history'?KRUI.reqs():KRUI.homeCard()+KRUI.shop();
-  app.innerHTML=`<h1>NEXUS PASS</h1><p class="sub">FOREVYE üyeliklerin tek yerde.</p>`+connectCard(msg)+part;
+  app.innerHTML=`<h1>Nexus Pass</h1><p class="sub">Forevye üyeliklerin tek yerde.</p>`+connectCard(msg)+part;
 }
-function paintK(){const s=KR.S();$('#kbal').innerHTML='<img src="assets/crystal.svg" alt=""> '+(+s.bal||0).toLocaleString('tr-TR',{maximumFractionDigits:4})}
+function paintStatus(){const set=(d,t,on,txt)=>{$(d).className=on?'is-on':'is-off';$(t).textContent=txt},K=KR.S();
+  set('#nexus-dot','#nexus-state',!!tok,tok?'Nexus: bağlı':'Nexus: giriş bekleniyor');
+  set('#crystal-dot','#crystal-state',!KR.offline()&&K.id!=='--------',KR.offline()?'Kristal: çevrimdışı':K.id==='--------'?'Kristal: bağlanıyor':'Kristal: bağlı')}
+function paintK(){const s=KR.S();$('#kbal').innerHTML=KRUI.amount(s.bal)}
 async function route(){
   await boot;await Promise.race([KR.ready(),new Promise(r=>setTimeout(r,4000))]);
   const [r,a,b]=(location.hash.slice(1)||'home').split('/');$('#modal').hidden=true;
-  document.querySelectorAll('.tabs a[data-r]').forEach(t=>t.classList.toggle('on',t.dataset.r===({p:'discover',k:'discover',ent:'mine',acct:'home'}[r]||r)));
-  paintK();
+  document.querySelectorAll('[data-r]').forEach(t=>{const on=t.dataset.r===({p:'discover',k:'discover',ent:'mine'}[r]||r);t.classList.toggle('on',on);on?t.setAttribute('aria-current','page'):t.removeAttribute('aria-current')});
+  paintK();paintStatus();document.title=({home:'Genel bakış',mine:'Üyeliklerim',discover:'Keşfet',history:'Hareketler',systems:'Bağlı sistemler',acct:'Kristal hesabı',p:'Paket',k:'Paket',ent:'Üyelik'}[r]||'Genel bakış')+' · Nexus Pass';
   if(r==='k'){app.innerHTML=KRUI.detail(a,b);window.scrollTo(0,0);return}
   if(r==='acct'){app.innerHTML=KRUI.acct();window.scrollTo(0,0);return}
   if(!tok){if(r==='ent'||r==='p')return connectScreen(bootErr||undefined);return guest(r,bootErr||undefined)}
@@ -129,5 +148,5 @@ async function route(){
 }
 const net=()=>$('#offline').hidden=navigator.onLine;
 addEventListener('online',net);addEventListener('offline',net);addEventListener('hashchange',route);addEventListener('kr:refresh',()=>route());
-KR.onChange(()=>{paintK();if(/^#acct/.test(location.hash))route()});KR.start();
+KR.onChange(()=>{paintK();paintStatus();if(/^#acct/.test(location.hash))route()});KR.start();
 net();route();

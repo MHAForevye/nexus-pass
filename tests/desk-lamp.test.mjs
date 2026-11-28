@@ -94,7 +94,8 @@ test('Kristal amounts render the gem image in shopping and account views', () =>
     cfg() { return { packs: [] }; }, app: 'Astrophoto Cam', offline() { return false; }, today() { return 'today'; },
     zTier() { return null; }, rTier() { return null; }, zSave() { return 0; }, rSave() { return 0; }
   } };
-  vm.runInNewContext(read('assets/kr-ui.js'), { document, window, console, Promise, setTimeout, clearTimeout });
+  const IC = new Proxy({}, { get: (_, n) => `<svg class="ic"><use href="#i-${String(n)}"/></svg>` });
+  vm.runInNewContext(read('assets/kr-ui.js'), { document, window, IC, console, Promise, setTimeout, clearTimeout });
   const shop = window.KRUI.shop();
   const account = window.KRUI.homeCard();
   assert.match(shop, /<img src="assets\/crystal\.svg" alt="">/);

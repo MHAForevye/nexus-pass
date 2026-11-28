@@ -37,10 +37,11 @@ Kristal sunucusu ayrıdır (Cloudflare Worker + D1, hava reposundaki `worker/`);
 
 **Retro Camera:** `config.js` → `RETRO_URL` (ve `ZAMAN_URL`) gerçek yayın adresi olmalı. Sunucu tarafında `retro` ürünü, `/api/rpass/buy`, `/api/admin/rpass(es)` ve `/api/retro/redeem|verify` uçları gerekir; ayrıntı Retro Camera'daki `SUNUCU.md` dosyasında.
 
-## Pass Studio arayüzü
-- Masaüstünde sol gezinme paneli, üst bağlantı durumları ve üyelik özeti; mobilde alt gezinme kullanılır.
-- `Bağlı uygulamalar` alanı Nexus çekirdeğini, Kristal hesabını, Mantar Pano'yu, Zamanlayıcı'yı, Retro Camera'yı ve Astrophoto Cam paket akışını tek merkezde toplar. Uygulama adresleri `assets/config.js` içindeki mevcut değişkenlerden okunur; adresi tanımsız servis için sahte bağlantı oluşturulmaz.
-- Mantar Pano, Zamanlayıcı ve Retro Camera aktivasyon kodları `Üyeliklerim` ekranından kendi uygulamasına kod parametresiyle açılmaya devam eder. Kristal hesabı, Hava/önceki Mağaza ile mevcut Site ID hesabını kullanır; Nexus FN oturumu ayrı ve sekme kapsamındadır.
-- Arka plandaki masa lambasının sıcak sarı ışığı sabit yanar. Başlık SVG üzerinde sürüklenebilir veya `Başlık yönü` kaydırıcısıyla ayarlanabilir; `Sıfırla` başlangıç açısına döndürür.
+## Arayüz
+- Sistem yazı tipi (SF Pro / Segoe UI), harici yazı tipi yüklenmez. Açık ve koyu tema; üst çubuktaki düğme sistem, açık, koyu arasında geçiş yapar (seçim `localStorage`'da).
+- Masaüstünde sol gezinme, mobilde alt sekme çubuğu. Tüm simgeler `index.html` içindeki SVG sprite'ından gelir (`assets/icons.js` → `IC.<ad>`); emoji ya da yazı simgesi kullanılmaz.
+- `Genel bakış`, `Üyeliklerim`, `Keşfet`, `Hareketler`, `Bağlı sistemler` (`#systems`) ve `Kristal hesabı` (`#acct`) ekranları. Bağlı sistemler yalnızca `config.js` içinde tanımlı adresler için bağlantı gösterir.
+- Onaylar `assets/ui.js` içindeki onay sayfasıyla yapılır; tarayıcı `confirm/alert` penceresi kullanılmaz.
+- Masa lambası geniş ekranlarda arka planda durur; başlık sürüklenir ya da ok tuşlarıyla ayarlanır.
 
-Bu arayüz derleme gerektirmez. GitHub Pages için `index.html` ve `assets/` klasörünü mevcut depo köküne gönder. Kontrol: `npm test`.
+Derleme gerektirmez. GitHub Pages için `index.html` ve `assets/` klasörünü depo köküne gönder. Kontrol: `npm test`.
